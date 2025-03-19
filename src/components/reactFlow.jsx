@@ -101,32 +101,37 @@ const ReactFlowComponent = () => {
   };
 
   return (
-    <div className="w-screen h-screen flex items-center justify-start overflow-hidden p-5">
-      <div className="w-[80vw] h-[90vh] border border-gray-300 rounded-lg shadow-lg relative">
-        {/* Fixed Button with Better Styling */}
-        <button
-          onClick={addNewNode}
-          className="absolute top-4 left-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-600 transition-all z-50"
-        >
-          Add Node
-        </button>
+    <div className="w-screen h-screen flex items-center justify-center overflow-hidden ">
+      <div className="w-[80vw] h-[90vh] border border-gray-300 rounded-lg shadow-lg relative flex flex-col">
+        {/* Centered Toolbar */}
+        <div className="w-full h-16 bg-gray-400 flex items-center justify-start rounded-t-lg">
+          <button
+            onClick={addNewNode}
+            className="ml-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-600 transition-all"
+          >
+            Add Node
+          </button>
+        </div>
 
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          snapToGrid={true}
-          snapGrid={[20, 20]}
-          connectionLineType="smoothstep"
-          className="w-full h-full"
-        >
-          <MiniMap />
-          <Controls />
-          <Background gap={20} variant="dots" />
-        </ReactFlow>
+        {/* ReactFlow Canvas */}
+        <div className="flex-grow">
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            nodeTypes={nodeTypes}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            snapToGrid={true}
+            snapGrid={[20, 20]}
+            connectionLineType="smoothstep"
+            className="w-full h-full"
+          >
+            <MiniMap />
+            <Controls />
+            <Background gap={20} variant="dots" />
+          </ReactFlow>
+        </div>
       </div>
     </div>
   );

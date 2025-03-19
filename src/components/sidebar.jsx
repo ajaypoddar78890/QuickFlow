@@ -1,52 +1,102 @@
-import React, { useState } from "react";
-import { Menu, X } from "lucide-react"; // Icons for toggle button
+import { useState } from "react";
+import {
+  FileText,
+  Save,
+  Image,
+  Users,
+  Command,
+  Search,
+  HelpCircle,
+  Trash2,
+  Star,
+  Github,
+  UserPlus,
+  MessageSquare,
+  Sun,
+  Moon,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
 
-  return (
-    <div>
-      {/* Sidebar */}
-      <div
-        className={`bg-gray-900 text-white h-screen transition-all duration-300 ${
-          isOpen ? "w-[15vw]" : "w-0"
-        } overflow-hidden`}
-      >
-        {/* Sidebar Content */}
-        <div className="p-5 mt-10">
-          <h2 className="text-lg font-bold mb-4">Sidebar</h2>
-          <ul>
-            <li className="mb-3">
-              <a href="#" className="hover:text-gray-400">
-                Home
-              </a>
-            </li>
-            <li className="mb-3">
-              <a href="#" className="hover:text-gray-400">
-                About
-              </a>
-            </li>
-            <li className="mb-3">
-              <a href="#" className="hover:text-gray-400">
-                Services
-              </a>
-            </li>
-            <li className="mb-3">
-              <a href="#" className="hover:text-gray-400">
-                Contact
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  };
 
-      {/* Toggle Button */}
+  return (
+    <div
+      className={`relative ${
+        isOpen ? "w-80" : "w-24"
+      } h-screen bg-gray-100 dark:bg-gray-900 p-4 shadow-lg transition-all duration-300`}
+    >
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="absolute top-4 left-4 bg-gray-800 p-2 rounded text-white z-50"
+        onClick={toggleSidebar}
+        className="absolute top-4 right-[-12px] bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-1 rounded-full shadow-md hover:bg-gray-400 dark:hover:bg-gray-600 transition"
       >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
+        {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
       </button>
+
+      <ul className="mt-10 space-y-4">
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+          <FileText size={20} />
+          {isOpen && <span>Open</span>}
+        </li>
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+          <Save size={20} />
+          {isOpen && <span>Save to...</span>}
+        </li>
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+          <Image size={20} />
+          {isOpen && <span>Export Image</span>}
+        </li>
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+          <Users size={20} />
+          {isOpen && <span>Live Collaboration</span>}
+        </li>
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+          <Command size={20} />
+          {isOpen && <span>Command Palette</span>}
+        </li>
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+          <Search size={20} />
+          {isOpen && <span>Find on Canvas</span>}
+        </li>
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+          <HelpCircle size={20} />
+          {isOpen && <span>Help</span>}
+        </li>
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-red-500">
+          <Trash2 size={20} />
+          {isOpen && <span>Reset Canvas</span>}
+        </li>
+        <li className="border-t border-gray-300 dark:border-gray-700 pt-4"></li>
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-yellow-500">
+          <Star size={20} />
+          {isOpen && <span>Excalidraw+</span>}
+        </li>
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-black">
+          <Github size={20} />
+          {isOpen && <span>GitHub</span>}
+        </li>
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+          <UserPlus size={20} />
+          {isOpen && <span>Follow Us</span>}
+        </li>
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-purple-500">
+          <MessageSquare size={20} />
+          {isOpen && <span>Discord Chat</span>}
+        </li>
+        <li className="border-t border-gray-300 dark:border-gray-700 pt-4"></li>
+        <li className="flex items-center space-x-3 text-blue-500 cursor-pointer hover:text-blue-700">
+          {isOpen && <span>Sign Up</span>}
+        </li>
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer">
+          <Sun size={20} />
+          {isOpen && <span>Theme</span>}
+        </li>
+      </ul>
     </div>
   );
 };

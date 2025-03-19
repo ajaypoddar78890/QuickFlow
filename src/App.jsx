@@ -6,7 +6,7 @@ function App() {
   return (
     <div className="flex h-screen">
       <Sidebar />
-      <div className="flex-1">
+      <div className=" ">
         <ReactFlow />
       </div>
     </div>
