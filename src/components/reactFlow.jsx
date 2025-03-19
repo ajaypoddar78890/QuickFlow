@@ -101,30 +101,33 @@ const ReactFlowComponent = () => {
   };
 
   return (
-    <div className="w-screen h-screen relative">
-      {/* Fixed Button with Better Styling */}
-      <button
-        onClick={addNewNode}
-        className="absolute top-4 left-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-600 transition-all z-50"
-      >
-        Add Node
-      </button>
+    <div className="w-screen h-screen flex items-center justify-start overflow-hidden p-5">
+      <div className="w-[80vw] h-[90vh] border border-gray-300 rounded-lg shadow-lg relative">
+        {/* Fixed Button with Better Styling */}
+        <button
+          onClick={addNewNode}
+          className="absolute top-4 left-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-600 transition-all z-50"
+        >
+          Add Node
+        </button>
 
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        snapToGrid={true}
-        snapGrid={[20, 20]}
-        connectionLineType="smoothstep"
-      >
-        <MiniMap />
-        <Controls />
-        <Background gap={20} variant="dots" />
-      </ReactFlow>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          snapToGrid={true}
+          snapGrid={[20, 20]}
+          connectionLineType="smoothstep"
+          className="w-full h-full"
+        >
+          <MiniMap />
+          <Controls />
+          <Background gap={20} variant="dots" />
+        </ReactFlow>
+      </div>
     </div>
   );
 };

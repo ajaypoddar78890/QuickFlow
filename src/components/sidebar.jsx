@@ -1,28 +1,19 @@
 import React, { useState } from "react";
-import ReactFlowComponent from "./reactFlow";
 import { Menu, X } from "lucide-react"; // Icons for toggle button
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="flex w-[20rem]">
+    <div>
       {/* Sidebar */}
       <div
         className={`bg-gray-900 text-white h-screen transition-all duration-300 ${
-          isOpen ? "w-[20rem]" : "w-48"
-        }`}
+          isOpen ? "w-[15vw]" : "w-0"
+        } overflow-hidden`}
       >
-        {/* Toggle Button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="absolute top-4 left-4 text-white focus:outline-none"
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-
         {/* Sidebar Content */}
-        <div className={`p-5  mt-10 ${isOpen ? "block" : "hidden"}`}>
+        <div className="p-5 mt-10">
           <h2 className="text-lg font-bold mb-4">Sidebar</h2>
           <ul>
             <li className="mb-3">
@@ -49,11 +40,13 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-5">
-        <h1 className="text-2xl font-bold">PlayGround</h1>
-        <ReactFlowComponent />
-      </div>
+      {/* Toggle Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="absolute top-4 left-4 bg-gray-800 p-2 rounded text-white z-50"
+      >
+        {isOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
     </div>
   );
 };
