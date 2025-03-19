@@ -71,11 +71,20 @@ const CustomNode = ({ id, data, selected }) => {
         }}
       />
 
-    {/* Connection Handles */}
-<Handle type="target" position={Position.Top} isConnectable={true} />
-<Handle type="source" position={Position.Right} id="right" isConnectable={true} />
-<Handle type="source" position={Position.Bottom} id="bottom" isConnectable={true} />
-
+      {/* Connection Handles */}
+      <Handle type="target" position={Position.Top} isConnectable={true} />
+      <Handle
+        type="source"
+        position={Position.Right}
+        id="right"
+        isConnectable={true}
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="bottom"
+        isConnectable={true}
+      />
     </div>
   );
 };
