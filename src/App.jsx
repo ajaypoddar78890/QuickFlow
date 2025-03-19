@@ -1,10 +1,11 @@
 import "./App.css";
-import ReactFlow from "./reactFlow";
+import ReactFlow from "./components/reactFlow";
+import Sidebar from "./components/sidebar";
 
 function App() {
   return (
     <>
-      <ReactFlow />
+      <Sidebar />
     </>
   );
 }
