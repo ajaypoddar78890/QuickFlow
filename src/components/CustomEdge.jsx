@@ -10,9 +10,8 @@ const CustomEdge = ({
   sourcePosition,
   targetPosition,
   style,
-  setEdges, // ✅ Receive setEdges from props
+  setEdges, // received via props
 }) => {
-  // Generate a smooth Bezier path
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -22,22 +21,18 @@ const CustomEdge = ({
     targetPosition,
   });
 
-  // Function to remove the edge
   const removeEdge = () => {
     setEdges((eds) => eds.filter((edge) => edge.id !== id));
   };
 
   return (
     <>
-      {/* Bezier Edge */}
       <path
         id={id}
         className="react-flow__edge-path"
         d={edgePath}
         style={style}
       />
-
-      {/* Cross Button in the Middle of the Line */}
       <EdgeLabelRenderer>
         <div
           style={{
@@ -52,9 +47,8 @@ const CustomEdge = ({
             padding: "2px 4px",
             cursor: "pointer",
             fontSize: "12px",
-            background: "red", // ✅ Improved visibility
           }}
-          onClick={removeEdge} // ✅ Edge deletion works now
+          onClick={removeEdge}
         >
           ❌
         </div>

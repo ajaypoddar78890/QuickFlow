@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -7,10 +7,6 @@ import {
   useNodesState,
   useEdgesState,
   addEdge,
-  getBezierPath,
-  EdgeLabelRenderer,
-  useReactFlow,
-
 } from "@xyflow/react";
 import CustomNode from "./customnode"; // Import custom node
 import CustomEdge from "./CustomEdge";
@@ -29,80 +25,18 @@ const initialNodes = [
   },
 ];
 
-// Custom Edge Component with Delete Button
-const CustomEdge = ({
-  id,
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-  sourcePosition,
-  targetPosition,
-  style,
-}) => {
-  const { setEdges } = useReactFlow();
-
-  // Generate a smooth Bezier path
-  const [edgePath, labelX, labelY] = getBezierPath({
-    sourceX,
-    sourceY,
-    sourcePosition,
-    targetX,
-    targetY,
-    targetPosition,
-  });
-
-  // Function to remove the edge
-  const removeEdge = () => {
-    setEdges((eds) => eds.filter((edge) => edge.id !== id));
-  };
-
-  return (
-    <>
-      {/* Bezier Edge */}
-      <path
-        id={id}
-        className="react-flow__edge-path"
-        d={edgePath}
-        style={style}
-      />
-
-      {/* Cross Button in the Middle of the Line */}
-      <EdgeLabelRenderer>
-        <div
-          style={{
-            position: "absolute",
-            transform: `translate(-50%, -50%)`,
-            left: labelX,
-            top: labelY,
-            zIndex: 10,
-
-            color: "white",
-            border: "none",
-            borderRadius: "50%",
-            padding: "2px 4px",
-            cursor: "pointer",
-            fontSize: "12px",
-          }}
-          onClick={removeEdge}
-        >
-          ❌
-        </div>
-      </EdgeLabelRenderer>
-    </>
-  );
-};
-
-// Register Custom Edge
-
-const edgeTypes = {
-  custom: CustomEdge, // ✅ No need to pass setEdges manually
-};
-
 const ReactFlowComponent = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [nodeId, setNodeId] = useState(2);
+
+  // ✅ Move edgeTypes inside the component, after setEdges is defined
+  const edgeTypes = useMemo(
+    () => ({
+      custom: (edgeProps) => <CustomEdge {...edgeProps} setEdges={setEdges} />,
+    }),
+    [setEdges]
+  );
 
   const onConnect = useCallback(
     (params) => {
@@ -196,10 +130,10 @@ const ReactFlowComponent = () => {
             nodes={nodes}
             edges={edges}
             nodeTypes={nodeTypes}
-            edgeTypes={edgeTypes} // Register the custom edge
+            edgeTypes={edgeTypes} // ✅ edgeTypes now correctly includes setEdges
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
+            onConnect={onConnect} 
             snapToGrid={true}
             snapGrid={[20, 20]}
             connectionLineType="smoothstep"
