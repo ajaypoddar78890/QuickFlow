@@ -1,15 +1,16 @@
 import React, { useState } from "react";
+import ReactFlowComponent from "./reactFlow";
 import { Menu, X } from "lucide-react"; // Icons for toggle button
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="flex">
+    <div className="flex w-[20rem]">
       {/* Sidebar */}
       <div
         className={`bg-gray-900 text-white h-screen transition-all duration-300 ${
-          isOpen ? "w-64" : "w-16"
+          isOpen ? "w-[20rem]" : "w-48"
         }`}
       >
         {/* Toggle Button */}
@@ -21,7 +22,7 @@ const Sidebar = () => {
         </button>
 
         {/* Sidebar Content */}
-        <div className={`p-5 ${isOpen ? "block" : "hidden"}`}>
+        <div className={`p-5  mt-10 ${isOpen ? "block" : "hidden"}`}>
           <h2 className="text-lg font-bold mb-4">Sidebar</h2>
           <ul>
             <li className="mb-3">
@@ -50,8 +51,8 @@ const Sidebar = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-5">
-        <h1 className="text-2xl font-bold">Main Content</h1>
-        <p>Here is your main app content.</p>
+        <h1 className="text-2xl font-bold">PlayGround</h1>
+        <ReactFlowComponent />
       </div>
     </div>
   );

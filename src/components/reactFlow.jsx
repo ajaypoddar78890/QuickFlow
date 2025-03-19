@@ -36,7 +36,6 @@ const ReactFlowComponent = () => {
 
       if (!sourceNode) return;
 
-      // If the target node exists, simply connect them without creating a new node
       if (targetNode) {
         const newEdge = {
           id: `e${params.source}-${params.target}`,
@@ -47,14 +46,11 @@ const ReactFlowComponent = () => {
           animated: true,
           style: { stroke: "#007bff", strokeWidth: 2 },
         };
-
         setEdges((eds) => addEdge(newEdge, eds));
         return;
       }
 
-      // Otherwise, create a new node and connect it
       const newNodeId = `${nodeId}`;
-
       let newPosition = {
         x: sourceNode.position.x,
         y: sourceNode.position.y + 120,
@@ -91,14 +87,12 @@ const ReactFlowComponent = () => {
     [nodes, setNodes, setEdges, nodeId]
   );
 
-  // Function to add a new node when button is clicked
   const addNewNode = () => {
     const newNodeId = `${nodeId}`;
-
     const newNode = {
       id: newNodeId,
       type: "customNode",
-      position: { x: Math.random() * 600, y: Math.random() * 400 }, // Randomized position
+      position: { x: Math.random() * 600, y: Math.random() * 400 },
       data: { label: `Node ${newNodeId}` },
     };
 
@@ -107,23 +101,11 @@ const ReactFlowComponent = () => {
   };
 
   return (
-    <div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-      {/* Button to Add New Node */}
+    <div className="w-screen h-screen relative">
+      {/* Fixed Button with Better Styling */}
       <button
         onClick={addNewNode}
-        style={{
-          position: "absolute",
-          top: 10,
-          left: 10,
-          zIndex: 10,
-          padding: "10px 15px",
-          backgroundColor: "#007bff",
-          color: "#fff",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-          fontSize: "14px",
-        }}
+        className="absolute top-4 left-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-600 transition-all z-50"
       >
         Add Node
       </button>
@@ -131,17 +113,17 @@ const ReactFlowComponent = () => {
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        nodeTypes={nodeTypes} // Register custom node
+        nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        snapToGrid={true} // Enables grid snapping
-        snapGrid={[20, 20]} // Grid size
-        connectionLineType="smoothstep" // Makes connections smooth
+        snapToGrid={true}
+        snapGrid={[20, 20]}
+        connectionLineType="smoothstep"
       >
         <MiniMap />
         <Controls />
-        <Background gap={20} variant="dots" /> {/* Adds grid background */}
+        <Background gap={20} variant="dots" />
       </ReactFlow>
     </div>
   );
