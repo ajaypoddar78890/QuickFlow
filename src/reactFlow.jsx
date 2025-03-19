@@ -26,7 +26,6 @@ const ReactFlowComponent = () => {
 
   const onConnect = useCallback(
     (params) => {
-      // Find the source node (parent)
       const sourceNode = nodes.find((node) => node.id === params.source);
       if (!sourceNode) return;
 
@@ -35,30 +34,30 @@ const ReactFlowComponent = () => {
       // Determine new node position based on the handle used
       let newPosition = {
         x: sourceNode.position.x,
-        y: sourceNode.position.y + 120,
-      }; // Default: bottom
+        y: sourceNode.position.y + 120, // Default: Bottom
+      };
 
       if (params.sourceHandle === "right") {
         newPosition = {
-          x: sourceNode.position.x + 150,
+          x: sourceNode.position.x + 150, // Place it to the right
           y: sourceNode.position.y,
-        }; // Right side
+        };
       }
 
       const newNode = {
         id: newNodeId,
-        type: "default",
+        type: "customNode",
         position: newPosition,
         data: { label: `Node ${newNodeId}` },
       };
 
       setNodes((nds) => [...nds, newNode]);
 
-      // Create an edge from parent to new node
+      // Ensure correct handle mapping
       const newEdge = {
         id: `e${params.source}-${newNodeId}`,
         source: params.source,
-        sourceHandle: params.sourceHandle, // Ensure correct handle mapping
+        sourceHandle: params.sourceHandle, // Ensure it's mapped correctly
         target: newNodeId,
         animated: true,
         style: { stroke: "#007bff", strokeWidth: 2 },
@@ -67,7 +66,7 @@ const ReactFlowComponent = () => {
       setEdges((eds) => addEdge(newEdge, eds));
       setNodeId((prev) => prev + 1);
     },
-    [setNodes, setEdges, nodeId, nodes]
+    [nodes, setNodes, setEdges, nodeId]
   );
 
   return (
