@@ -112,7 +112,7 @@ const ReactFlowComponent = () => {
   };
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center overflow-hidden">
+    <div className="w-full h-full flex items-center justify-center overflow-hidden pl-20">
       <div className="w-[80vw] h-[90vh] border border-gray-300 rounded-lg shadow-lg relative flex flex-col">
         {/* Centered Toolbar */}
         <div className="w-full h-16 bg-gray-400 flex items-center justify-start rounded-t-lg">
