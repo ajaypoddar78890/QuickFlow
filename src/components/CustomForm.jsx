@@ -1,18 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-/**
- * This component manages a dynamic list of fields.
- * Each field has:
- *   - fieldName: string
- *   - dataType: string
- *   - isArray: boolean
- *   - isRequired: boolean
- */
 const DynamicFieldsManager = () => {
-  // State to store all fields
-  const [fields, setFields] = useState([]);
+  const [fields, setFields] = useState(() => {
+    // Retrieve stored fields from localStorage
+    const savedFields = localStorage.getItem("fields");
+    return savedFields ? JSON.parse(savedFields) : [];
+  });
 
-  // State for the current field being added
   const [currentField, setCurrentField] = useState({
     fieldName: "",
     dataType: "string",
@@ -20,7 +14,11 @@ const DynamicFieldsManager = () => {
     isRequired: false,
   });
 
-  // Handle changes in the add-field form
+  // Save fields to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("fields", JSON.stringify(fields));
+  }, [fields]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setCurrentField((prev) => ({
@@ -29,16 +27,13 @@ const DynamicFieldsManager = () => {
     }));
   };
 
-  // Add the current field to the fields array
   const handleAddField = (e) => {
     e.preventDefault();
-    // Simple validation
     if (!currentField.fieldName) {
       alert("Please enter a field name");
       return;
     }
     setFields((prev) => [...prev, currentField]);
-    // Reset the form
     setCurrentField({
       fieldName: "",
       dataType: "string",
@@ -47,24 +42,20 @@ const DynamicFieldsManager = () => {
     });
   };
 
-  // Remove a field by index
   const handleRemoveField = (index) => {
     setFields((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // For demonstration: how to export as JSON
   const handleExport = () => {
-    const jsonOutput = JSON.stringify(fields, null, 2);
-    console.log(jsonOutput);
+    console.log(JSON.stringify(fields, null, 2));
     alert("Check console for JSON output!");
   };
 
   return (
-    <div className="h-auto bg-gray-100 p-4 z-10                   ">
+    <div className="h-auto bg-gray-100 p-4">
       <div className="min-w-xl mx-auto bg-white p-6 rounded shadow">
         <h1 className="text-2xl font-bold mb-4">Collection Detail-Form</h1>
 
-        {/* Form to add a new field */}
         <form onSubmit={handleAddField} className="flex flex-col gap-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -139,7 +130,6 @@ const DynamicFieldsManager = () => {
           </button>
         </form>
 
-        {/* Table to display added fields */}
         <div className="overflow-x-auto">
           <table className="min-w-full border border-gray-200">
             <thead className="bg-gray-50">
@@ -198,7 +188,6 @@ const DynamicFieldsManager = () => {
           </table>
         </div>
 
-        {/* Export JSON button */}
         <div className="mt-4 flex justify-end">
           <button
             onClick={handleExport}

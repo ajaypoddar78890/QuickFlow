@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo, useEffect } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -16,27 +16,43 @@ const nodeTypes = {
   customNode: CustomNode,
 };
 
-const initialNodes = [
-  {
-    id: "1",
-    type: "customNode",
-    position: { x: 250, y: 150 },
-    data: { label: "Start Node" },
-  },
-];
+// Function to get saved data from localStorage
+const getSavedData = () => {
+  const savedData = localStorage.getItem("reactFlowData");
+  return savedData ? JSON.parse(savedData) : null;
+};
 
 const ReactFlowComponent = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [nodeId, setNodeId] = useState(2);
+  // Load saved data if available, otherwise set default nodes and edges
+  const savedData = getSavedData();
+  const [nodes, setNodes, onNodesChange] = useNodesState(
+    savedData?.nodes || [
+      {
+        id: "1",
+        type: "customNode",
+        position: { x: 250, y: 150 },
+        data: { label: "Start Node" },
+      },
+    ]
+  );
+  const [edges, setEdges, onEdgesChange] = useEdgesState(
+    savedData?.edges || []
+  );
+  const [nodeId, setNodeId] = useState(savedData?.nodeId || 2);
 
-  // ✅ Move edgeTypes inside the component, after setEdges is defined
+  // ✅ Move edgeTypes inside the component
   const edgeTypes = useMemo(
     () => ({
       custom: (edgeProps) => <CustomEdge {...edgeProps} setEdges={setEdges} />,
     }),
     [setEdges]
   );
+
+  // 🔴 Save data to localStorage whenever nodes, edges, or nodeId change
+  useEffect(() => {
+    const dataToSave = JSON.stringify({ nodes, edges, nodeId });
+    localStorage.setItem("reactFlowData", dataToSave);
+  }, [nodes, edges, nodeId]);
 
   const onConnect = useCallback(
     (params) => {
@@ -77,7 +93,7 @@ const ReactFlowComponent = () => {
         id: newNodeId,
         type: "customNode",
         position: newPosition,
-        data: { label: `Node ${newNodeId}` },
+        data: { label: `Node ${newNodeId}` }, // Form data will be saved here
       };
 
       setNodes((nds) => [...nds, newNode]);
@@ -104,7 +120,7 @@ const ReactFlowComponent = () => {
       id: newNodeId,
       type: "customNode",
       position: { x: Math.random() * 600, y: Math.random() * 400 },
-      data: { label: `Node ${newNodeId}` },
+      data: { label: `Node ${newNodeId}` }, // Form data is stored in `data`
     };
 
     setNodes((nds) => [...nds, newNode]);
@@ -130,10 +146,10 @@ const ReactFlowComponent = () => {
             nodes={nodes}
             edges={edges}
             nodeTypes={nodeTypes}
-            edgeTypes={edgeTypes} // ✅ edgeTypes now correctly includes setEdges
+            edgeTypes={edgeTypes}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
-            onConnect={onConnect} 
+            onConnect={onConnect}
             snapToGrid={true}
             snapGrid={[20, 20]}
             connectionLineType="smoothstep"
