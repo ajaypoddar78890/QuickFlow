@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Handle, Position, NodeResizer, useReactFlow } from "@xyflow/react";
-import CustomForm from "./CustomForm"; // Import your custom form component
+import CustomForm from "./CustomForm";
 
 const CustomNode = ({ id, data, selected }) => {
   const { setNodes } = useReactFlow();
