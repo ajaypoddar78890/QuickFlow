@@ -60,9 +60,9 @@ const DynamicFieldsManager = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-3xl mx-auto bg-white p-6 rounded shadow">
-        <h1 className="text-2xl font-bold mb-4">Dynamic Fields Manager</h1>
+    <div className="h-auto bg-gray-100 p-4 z-10                   ">
+      <div className="min-w-5xl mx-auto bg-white p-6 rounded shadow">
+        <h1 className="text-2xl font-bold mb-4">Collection Detail-Form</h1>
 
         {/* Form to add a new field */}
         <form onSubmit={handleAddField} className="flex flex-col gap-4 mb-6">
