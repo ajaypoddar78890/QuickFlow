@@ -38,6 +38,8 @@ const Sidebar = () => {
         {isOpen ? <ChevronLeft size={30} /> : <ChevronRight size={30} />}
       </button>
 
+      <h2 className="text-2xl text-white font-bold ">QuickFlow</h2>
+
       <ul className="mt-10 space-y-4">
         <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
           <FileText size={30} />
@@ -74,7 +76,7 @@ const Sidebar = () => {
         <li className="border-t border-gray-300 dark:border-gray-700 pt-4"></li>
         <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-yellow-500">
           <Star size={30} />
-          {isOpen && <span>Excalidraw+</span>}
+          {isOpen && <span>QuickFlow</span>}
         </li>
         <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-black">
           <Github size={30} />
@@ -82,8 +84,8 @@ const Sidebar = () => {
         </li>
         <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
           <UserPlus size={30} />
-          {isOpen && <span>Follow Us</span>}
-        </li> 
+          {isOpen && <span>Follow Us</span>}v
+        </li>
         <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-purple-500">
           <MessageSquare size={30} />
           {isOpen && <span>Discord Chat</span>}
