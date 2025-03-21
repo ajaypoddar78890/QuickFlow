@@ -8,8 +8,8 @@ function App() {
   const flowRef = useRef(null);
   return (
     <div className="flex h-screen">
-      <Sidebar />
-      <div ref={flowRef} className="w-full h-screen bg-white">
+      <Sidebar flowRef={flowRef} />
+      <div ref={flowRef} className="w-full h-screen ">
         <ReactFlow />
       </div>
     </div>

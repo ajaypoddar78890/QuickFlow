@@ -23,9 +23,8 @@ const CustomEdge = ({
 
   const removeEdge = () => {
     setEdges((eds) => {
-      console.log("Before:", eds);
       const updatedEdges = eds.filter((edge) => edge.id !== id);
-      console.log("After:", updatedEdges);
+
       return updatedEdges;
     });
   };
@@ -51,7 +50,7 @@ const CustomEdge = ({
             padding: "4px 6px",
             cursor: "pointer",
             fontSize: "12px",
-            
+
             pointerEvents: "auto", // Ensuring clickability
           }}
           onClick={removeEdge}

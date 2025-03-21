@@ -28,13 +28,13 @@ const Sidebar = ({ flowRef }) => {
 
   // Function to capture and save the React Flow component as an image
   const handleExportImage = async () => {
-    if (!flowRef || !flowRef.current) {
+    if (!flowRef?.current) {
       console.error("React Flow container not found.");
       return;
     }
     try {
       const canvas = await html2canvas(flowRef.current, {
-        backgroundColor: "#ffffff", // White background for the image
+        backgroundColor: "#ffffff", // Set a solid white background (avoids OKLCH issue)
         useCORS: true,
       });
       const image = canvas.toDataURL("image/png");
