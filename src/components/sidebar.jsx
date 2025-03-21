@@ -1,5 +1,5 @@
 import { useState } from "react";
-import html2canvas from "html2canvas"; // Import html2canvas for capturing screenshots
+import domtoimage from "dom-to-image";
 import {
   FileText,
   Save,
@@ -27,27 +27,27 @@ const Sidebar = ({ flowRef }) => {
   };
 
   // Function to capture and save the React Flow component as an image
-  const handleExportImage = async () => {
-    if (!flowRef?.current) {
-      console.error("React Flow container not found.");
-      return;
-    }
-    try {
-      const canvas = await html2canvas(flowRef.current, {
-        backgroundColor: "#ffffff", // Set a solid white background (avoids OKLCH issue)
-        useCORS: true,
-      });
-      const image = canvas.toDataURL("image/png");
+ 
+const handleExportImage = () => {
+  if (!flowRef?.current) {
+    console.error("React Flow container not found.");
+    return;
+  }
+  const flowContainer = flowRef.current.closest(".react-flow");
+
+  domtoimage.toPng(flowContainer)
+    .then((dataUrl) => {
       const link = document.createElement("a");
-      link.href = image;
-      link.download = "reactflow-screenshot.png";
+      link.href = dataUrl;
+      link.download = "reactflow-export.png";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } catch (error) {
+    })
+    .catch((error) => {
       console.error("Error exporting image:", error);
-    }
-  };
+    });
+};
 
   return (
     <div

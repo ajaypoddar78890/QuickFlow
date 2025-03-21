@@ -9,7 +9,7 @@ function App() {
   return (
     <div className="flex h-screen">
       <Sidebar flowRef={flowRef} />
-      <div ref={flowRef} className="w-full h-screen ">
+      <div ref={flowRef} className="react-flow w-full h-screen ">
         <ReactFlow />
       </div>
     </div>
