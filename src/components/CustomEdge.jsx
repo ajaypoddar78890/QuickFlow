@@ -22,7 +22,12 @@ const CustomEdge = ({
   });
 
   const removeEdge = () => {
-    setEdges((eds) => eds.filter((edge) => edge.id !== id));
+    setEdges((eds) => {
+      console.log("Before:", eds);
+      const updatedEdges = eds.filter((edge) => edge.id !== id);
+      console.log("After:", updatedEdges);
+      return updatedEdges;
+    });
   };
 
   return (
@@ -40,13 +45,14 @@ const CustomEdge = ({
             transform: `translate(-50%, -50%)`,
             left: labelX,
             top: labelY,
-            zIndex: 10,
             color: "white",
             border: "none",
             borderRadius: "50%",
-            padding: "2px 4px",
+            padding: "4px 6px",
             cursor: "pointer",
             fontSize: "12px",
+            
+            pointerEvents: "auto", // Ensuring clickability
           }}
           onClick={removeEdge}
         >

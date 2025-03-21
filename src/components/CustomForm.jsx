@@ -52,7 +52,7 @@ const DynamicFieldsManager = () => {
   };
 
   return (
-    <div className="h-auto bg-gray-100 p-4">
+    <div className="h-auto bg-gray-100 p-4 z-30">
       <div className="min-w-xl mx-auto bg-white p-6 rounded shadow">
         <h1 className="text-2xl font-bold mb-4">Collection Detail-Form</h1>
 

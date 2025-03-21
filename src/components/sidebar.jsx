@@ -1,4 +1,5 @@
 import { useState } from "react";
+import html2canvas from "html2canvas"; // Import html2canvas for capturing screenshots
 import {
   FileText,
   Save,
@@ -18,11 +19,34 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const Sidebar = () => {
+const Sidebar = ({ flowRef }) => {
   const [isOpen, setIsOpen] = useState(true);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  // Function to capture and save the React Flow component as an image
+  const handleExportImage = async () => {
+    if (!flowRef || !flowRef.current) {
+      console.error("React Flow container not found.");
+      return;
+    }
+    try {
+      const canvas = await html2canvas(flowRef.current, {
+        backgroundColor: "#ffffff", // White background for the image
+        useCORS: true,
+      });
+      const image = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = image;
+      link.download = "reactflow-screenshot.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error exporting image:", error);
+    }
   };
 
   return (
@@ -49,7 +73,11 @@ const Sidebar = () => {
           <Save size={30} />
           {isOpen && <span>Save to...</span>}
         </li>
-        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+        {/* Export Image list item with onClick to trigger screenshot */}
+        <li
+          onClick={handleExportImage}
+          className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500"
+        >
           <Image size={30} />
           {isOpen && <span>Export Image</span>}
         </li>
@@ -84,7 +112,7 @@ const Sidebar = () => {
         </li>
         <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
           <UserPlus size={30} />
-          {isOpen && <span>Follow Us</span>}v
+          {isOpen && <span>Follow Us</span>}
         </li>
         <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-purple-500">
           <MessageSquare size={30} />
