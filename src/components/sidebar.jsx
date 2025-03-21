@@ -194,7 +194,15 @@ const Sidebar = ({ flowRef }) => {
           <Users size={30} />
           {isOpen && <span>Live Collaboration</span>}
         </li>
-        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+        <li
+          onClick={() => {
+            toast.warning(
+              "This feature is not available in the demo version.",
+              { position: "top-center" }
+            );
+          }}
+          className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500"
+        >
           <Command size={30} />
           {isOpen && <span>Command Palette</span>}
         </li>
@@ -221,7 +229,7 @@ const Sidebar = ({ flowRef }) => {
           <Star size={30} />
           {isOpen && <span>QuickFlow</span>}
         </li>
-        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-black">
+        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-white">
           <Github size={30} />
           {isOpen && <span>GitHub</span>}
         </li>
