@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { toast } from "sonner";
+import { useState, useRef } from "react";
 import domtoimage from "dom-to-image";
+import { useReactFlow } from "@xyflow/react";
 import {
   FileText,
   Save,
@@ -22,32 +24,125 @@ import {
 const Sidebar = ({ flowRef }) => {
   const [isOpen, setIsOpen] = useState(true);
 
+  //fit in convas
+  // Access the flow instance using the hook
+  const { fitView } = useReactFlow();
+
+  // Call fitView() when clicking the button
+  const handleFindOnCanvas = () => {
+    fitView();
+  };
+
+  const handleResetCanvas = () => {
+    localStorage.removeItem("fields"); // Remove 'fields' data
+    localStorage.removeItem("reactFlowData"); // Remove 'reactFlowData'
+
+    toast.success("Canvas reset successfully!", { position: "top-center" }); // Show success toast
+    window.location.reload();
+  };
+
+  //file open
+  const fileInputRef = useRef(null);
+
+  // Trigger file selection dialog
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  // Handle the file selection
+  const handleImportFile = (event) => {
+    if (!event || !event.target.files || event.target.files.length === 0) {
+      toast.error("No file selected!", { position: "top-center" });
+      return;
+    }
+
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target.result);
+        localStorage.setItem("fields", JSON.stringify(importedData.fields));
+        localStorage.setItem(
+          "reactFlowData",
+          JSON.stringify(importedData.reactFlowData)
+        );
+        toast.success("Data imported successfully!", {
+          position: "top-center",
+        });
+
+        // Reload the page after a short delay
+        setTimeout(() => window.location.reload(), 500);
+      } catch (error) {
+        toast.error("Invalid file format!", { position: "top-center" });
+        console.error("Error parsing file:", error);
+      }
+    };
+
+    reader.readAsText(file);
+  };
+
+  const handleSaveToFile = () => {
+    const data = {
+      fields: JSON.parse(localStorage.getItem("fields")) || [],
+      reactFlowData: JSON.parse(localStorage.getItem("reactFlowData")) || [],
+    };
+
+    const jsonData = JSON.stringify(data, null, 2); // Format JSON
+    const blob = new Blob([jsonData], { type: "application/json" });
+    const link = document.createElement("a");
+
+    link.href = URL.createObjectURL(blob);
+    link.download = "canvas-data.json"; // File name
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast.success("File saved successfully!", { position: "top-center" });
+  };
+
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
 
   // Function to capture and save the React Flow component as an image
- 
-const handleExportImage = () => {
-  if (!flowRef?.current) {
-    console.error("React Flow container not found.");
-    return;
-  }
-  const flowContainer = flowRef.current.closest(".react-flow");
 
-  domtoimage.toPng(flowContainer)
-    .then((dataUrl) => {
-      const link = document.createElement("a");
-      link.href = dataUrl;
-      link.download = "reactflow-export.png";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    })
-    .catch((error) => {
-      console.error("Error exporting image:", error);
-    });
-};
+  const handleExportImage = () => {
+    if (!flowRef?.current) {
+      console.error("React Flow container not found.");
+      return;
+    }
+    const flowContainer = flowRef.current.closest(".react-flow");
+
+    // Get the container size
+    const width = flowContainer.clientWidth * 3;
+    const height = flowContainer.clientHeight * 3;
+
+    domtoimage
+      .toPng(flowContainer, {
+        width: width,
+        height: height,
+        quality: 1, // Maximum quality
+        style: {
+          transform: "scale(3)", // Scale to improve resolution
+          transformOrigin: "top left",
+          width: flowContainer.clientWidth + "px",
+          height: flowContainer.clientHeight + "px",
+        },
+      })
+      .then((dataUrl) => {
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = "reactflow-export.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch((error) => {
+        console.error("Error exporting image:", error);
+      });
+  };
 
   return (
     <div
@@ -65,11 +160,17 @@ const handleExportImage = () => {
       <h2 className="text-2xl text-white font-bold ">QuickFlow</h2>
 
       <ul className="mt-10 space-y-4">
-        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+        <li
+          onClick={triggerFileInput}
+          className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500"
+        >
           <FileText size={30} />
           {isOpen && <span>Open</span>}
         </li>
-        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+        <li
+          onClick={handleSaveToFile}
+          className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500"
+        >
           <Save size={30} />
           {isOpen && <span>Save to...</span>}
         </li>
@@ -81,7 +182,15 @@ const handleExportImage = () => {
           <Image size={30} />
           {isOpen && <span>Export Image</span>}
         </li>
-        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+        <li
+          onClick={() => {
+            toast.warning(
+              "This feature is not available in the demo version.",
+              { position: "top-center" }
+            );
+          }}
+          className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500"
+        >
           <Users size={30} />
           {isOpen && <span>Live Collaboration</span>}
         </li>
@@ -89,7 +198,10 @@ const handleExportImage = () => {
           <Command size={30} />
           {isOpen && <span>Command Palette</span>}
         </li>
-        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
+        <li
+          onClick={handleFindOnCanvas}
+          className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500"
+        >
           <Search size={30} />
           {isOpen && <span>Find on Canvas</span>}
         </li>
@@ -97,7 +209,10 @@ const handleExportImage = () => {
           <HelpCircle size={30} />
           {isOpen && <span>Help</span>}
         </li>
-        <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-red-500">
+        <li
+          onClick={handleResetCanvas}
+          className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-red-500"
+        >
           <Trash2 size={30} />
           {isOpen && <span>Reset Canvas</span>}
         </li>
@@ -127,6 +242,13 @@ const handleExportImage = () => {
           {isOpen && <span>Theme</span>}
         </li>
       </ul>
+      <input
+        type="file"
+        accept=".json"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleImportFile}
+      />
     </div>
   );
 };

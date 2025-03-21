@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast, Toaster } from "sonner";
 
 const DynamicFieldsManager = () => {
   const [fields, setFields] = useState(() => {
@@ -30,7 +31,6 @@ const DynamicFieldsManager = () => {
   const handleAddField = (e) => {
     e.preventDefault();
     if (!currentField.fieldName) {
-      alert("Please enter a field name");
       return;
     }
     setFields((prev) => [...prev, currentField]);
@@ -46,9 +46,14 @@ const DynamicFieldsManager = () => {
     setFields((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleExport = () => {
-    console.log(JSON.stringify(fields, null, 2));
-    alert("Check console for JSON output!");
+  const handleExport = async () => {
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(fields, null, 2)); // Copy to clipboard
+      toast.success("Copied to Clipboard!", { position: "top-center" }); // Show success toast
+    } catch (error) {
+      console.error("Error copying data:", error);
+      toast.error("Failed to copy data!", { position: "top-center" }); // Show error toast
+    }
   };
 
   return (
@@ -123,6 +128,9 @@ const DynamicFieldsManager = () => {
           </div>
 
           <button
+            onClick={() => {
+              toast.warning("please add the field", { position: "top-center" });
+            }}
             type="submit"
             className="self-end bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
           >
