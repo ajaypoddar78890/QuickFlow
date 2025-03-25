@@ -1,4 +1,5 @@
-import React, { useCallback, useState, useMemo, useEffect } from "react";
+import React, { useCallback, useMemo, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import {
   ReactFlow,
   MiniMap,
@@ -8,7 +9,7 @@ import {
   useEdgesState,
   addEdge,
 } from "@xyflow/react";
-import CustomNode from "./customnode"; // Import custom node
+import CustomNode from "./customnode";
 import CustomEdge from "./CustomEdge";
 import "@xyflow/react/dist/style.css";
 
@@ -16,31 +17,31 @@ const nodeTypes = {
   customNode: CustomNode,
 };
 
-// Function to get saved data from localStorage
 const getSavedData = () => {
   const savedData = localStorage.getItem("reactFlowData");
-  return savedData ? JSON.parse(savedData) : null;
+  if (!savedData) return null;
+  return JSON.parse(savedData);
 };
 
 const ReactFlowComponent = () => {
-  // Load saved data if available, otherwise set default nodes and edges
   const savedData = getSavedData();
   const [nodes, setNodes, onNodesChange] = useNodesState(
-    savedData?.nodes || [
-      {
-        id: "1",
-        type: "customNode",
-        position: { x: 250, y: 150 },
-        data: { label: "Start Node" },
-      },
-    ]
+    savedData?.nodes?.length > 0
+      ? savedData.nodes
+      : [
+          {
+            id: uuidv4(),
+            type: "customNode",
+            position: { x: 250, y: 150 },
+            data: { label: "Start Node" },
+          },
+        ]
   );
+
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     savedData?.edges || []
   );
-  const [nodeId, setNodeId] = useState(savedData?.nodeId || 2);
 
-  // ✅ Move edgeTypes inside the component
   const edgeTypes = useMemo(
     () => ({
       custom: (edgeProps) => <CustomEdge {...edgeProps} setEdges={setEdges} />,
@@ -48,11 +49,10 @@ const ReactFlowComponent = () => {
     [setEdges]
   );
 
-  // 🔴 Save data to localStorage whenever nodes, edges, or nodeId change
   useEffect(() => {
-    const dataToSave = JSON.stringify({ nodes, edges, nodeId });
+    const dataToSave = JSON.stringify({ nodes, edges });
     localStorage.setItem("reactFlowData", dataToSave);
-  }, [nodes, edges, nodeId]);
+  }, [nodes, edges]);
 
   const onConnect = useCallback(
     (params) => {
@@ -63,7 +63,7 @@ const ReactFlowComponent = () => {
 
       if (targetNode) {
         const newEdge = {
-          id: `e${params.source}-${params.target}`,
+          id: uuidv4(),
           source: params.source,
           sourceHandle: params.sourceHandle,
           target: params.target,
@@ -76,7 +76,7 @@ const ReactFlowComponent = () => {
         return;
       }
 
-      const newNodeId = `${nodeId}`;
+      const newNodeId = uuidv4();
       let newPosition = {
         x: sourceNode.position.x,
         y: sourceNode.position.y + 120,
@@ -93,13 +93,17 @@ const ReactFlowComponent = () => {
         id: newNodeId,
         type: "customNode",
         position: newPosition,
-        data: { label: `Node ${newNodeId}` }, // Form data will be saved here
+        data: {
+          label: "Node",
+          details: `Details for ${newNodeId}`,
+          formData: { name: "", phone: "" }, // ✅ Added formData
+        },
       };
 
       setNodes((nds) => [...nds, newNode]);
 
       const newEdge = {
-        id: `e${params.source}-${newNodeId}`,
+        id: uuidv4(),
         source: params.source,
         sourceHandle: params.sourceHandle,
         target: newNodeId,
@@ -109,28 +113,36 @@ const ReactFlowComponent = () => {
       };
 
       setEdges((eds) => addEdge(newEdge, eds));
-      setNodeId((prev) => prev + 1);
     },
-    [nodes, setNodes, setEdges, nodeId]
+    [nodes, setNodes, setEdges]
   );
 
   const addNewNode = () => {
-    const newNodeId = `${nodeId}`;
+    const newNodeId = uuidv4();
+    console.log("New Node UUID:", newNodeId); // Log each new UUID
+
     const newNode = {
       id: newNodeId,
       type: "customNode",
       position: { x: Math.random() * 600, y: Math.random() * 400 },
-      data: { label: `Node ${newNodeId}` }, // Form data is stored in `data`
+      data: {
+        label: "Node",
+        details: `Details for ${newNodeId}`,
+        formData: { name: "", phone: "" }, // ✅ Added formData
+      },
     };
 
     setNodes((nds) => [...nds, newNode]);
-    setNodeId((prev) => prev + 1);
+
+    localStorage.setItem(
+      "reactFlowData",
+      JSON.stringify({ nodes: [...nodes, newNode], edges })
+    );
   };
 
   return (
     <div className="w-full h-full flex items-center justify-center overflow-hidden pl-20">
       <div className="w-[80vw] h-[90vh] border border-gray-300 rounded-lg shadow-lg relative flex flex-col">
-        {/* Centered Toolbar */}
         <div className="w-full h-16 bg-gray-400 flex items-center justify-start rounded-t-lg">
           <button
             onClick={addNewNode}
@@ -140,7 +152,6 @@ const ReactFlowComponent = () => {
           </button>
         </div>
 
-        {/* ReactFlow Canvas */}
         <div className="flex-grow">
           <ReactFlow
             nodes={nodes}

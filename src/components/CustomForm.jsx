@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { toast, Toaster } from "sonner";
 
-const DynamicFieldsManager = () => {
-  const [fields, setFields] = useState(() => {
-    // Retrieve stored fields from localStorage
-    const savedFields = localStorage.getItem("fields");
-    return savedFields ? JSON.parse(savedFields) : [];
+const DynamicFieldsManager = ({ nodeId }) => {
+  const [allFields, setAllFields] = useState(() => {
+    const savedData = localStorage.getItem("allFields");
+    try {
+      return savedData ? JSON.parse(savedData) : {};
+    } catch (error) {
+      console.error("Error parsing initial allFields from localStorage", error);
+      return {};
+    }
   });
+
+  const [fields, setFields] = useState(allFields[nodeId] || []);
 
   const [currentField, setCurrentField] = useState({
     fieldName: "",
@@ -15,10 +21,17 @@ const DynamicFieldsManager = () => {
     isRequired: false,
   });
 
-  // Save fields to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem("fields", JSON.stringify(fields));
-  }, [fields]);
+    setFields(allFields[nodeId] || []);
+  }, [allFields, nodeId]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("allFields", JSON.stringify(allFields));
+    } catch (error) {
+      console.error("Error setting allFields to localStorage:", error);
+    }
+  }, [allFields]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -30,36 +43,55 @@ const DynamicFieldsManager = () => {
 
   const handleAddField = (e) => {
     e.preventDefault();
-    if (!currentField.fieldName) {
+    if (!currentField.fieldName.trim()) {
+      toast.error("Field name cannot be empty!");
       return;
     }
-    setFields((prev) => [...prev, currentField]);
+
+    setAllFields((prev) => {
+      const updatedFields = {
+        ...prev,
+        [nodeId]: [...(prev[nodeId] || []), currentField],
+      };
+      return updatedFields;
+    });
+
     setCurrentField({
       fieldName: "",
       dataType: "string",
       isArray: false,
       isRequired: false,
     });
+
+    toast.success("Field added successfully!");
   };
 
   const handleRemoveField = (index) => {
-    setFields((prev) => prev.filter((_, i) => i !== index));
+    setAllFields((prev) => {
+      const updatedFields = prev[nodeId].filter((_, i) => i !== index);
+      return {
+        ...prev,
+        [nodeId]: updatedFields,
+      };
+    });
+    toast.success("Field removed!");
   };
 
   const handleExport = async () => {
     try {
-      await navigator.clipboard.writeText(JSON.stringify(fields, null, 2)); // Copy to clipboard
-      toast.success("Copied to Clipboard!", { position: "top-center" }); // Show success toast
+      await navigator.clipboard.writeText(JSON.stringify(fields, null, 2));
+      toast.success("Copied to Clipboard!");
     } catch (error) {
-      console.error("Error copying data:", error);
-      toast.error("Failed to copy data!", { position: "top-center" }); // Show error toast
+      toast.error("Failed to copy data!");
     }
   };
 
   return (
     <div className="h-auto bg-gray-100 p-4 z-30">
       <div className="min-w-xl mx-auto bg-white p-6 rounded shadow">
-        <h1 className="text-2xl font-bold mb-4">Collection Detail-Form</h1>
+        <h1 className="text-2xl font-bold mb-4">
+          Collection Detail-Form (Node {nodeId})
+        </h1>
 
         <form onSubmit={handleAddField} className="flex flex-col gap-4 mb-6">
           <div>
@@ -101,10 +133,13 @@ const DynamicFieldsManager = () => {
                 name="isArray"
                 checked={currentField.isArray}
                 onChange={handleChange}
-                id="isArray"
+                id={`isArray_${nodeId}`}
                 className="h-4 w-4 text-blue-600 border-gray-300 rounded"
               />
-              <label htmlFor="isArray" className="ml-2 text-sm text-gray-700">
+              <label
+                htmlFor={`isArray_${nodeId}`}
+                className="ml-2 text-sm text-gray-700"
+              >
                 Is Array
               </label>
             </div>
@@ -115,11 +150,11 @@ const DynamicFieldsManager = () => {
                 name="isRequired"
                 checked={currentField.isRequired}
                 onChange={handleChange}
-                id="isRequired"
+                id={`isRequired_${nodeId}`}
                 className="h-4 w-4 text-blue-600 border-gray-300 rounded"
               />
               <label
-                htmlFor="isRequired"
+                htmlFor={`isRequired_${nodeId}`}
                 className="ml-2 text-sm text-gray-700"
               >
                 Required
@@ -128,9 +163,6 @@ const DynamicFieldsManager = () => {
           </div>
 
           <button
-            onClick={() => {
-              toast.warning("please add the field", { position: "top-center" });
-            }}
             type="submit"
             className="self-end bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
           >
@@ -142,19 +174,19 @@ const DynamicFieldsManager = () => {
           <table className="min-w-full border border-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-2 border-b border-gray-200 text-left text-sm font-medium text-gray-700">
+                <th className="px-4 py-2 border-b text-left text-sm font-medium text-gray-700">
                   Field Name
                 </th>
-                <th className="px-4 py-2 border-b border-gray-200 text-left text-sm font-medium text-gray-700">
+                <th className="px-4 py-2 border-b text-left text-sm font-medium text-gray-700">
                   Data Type
                 </th>
-                <th className="px-4 py-2 border-b border-gray-200 text-center text-sm font-medium text-gray-700">
+                <th className="px-4 py-2 border-b text-center text-sm font-medium text-gray-700">
                   Is Array
                 </th>
-                <th className="px-4 py-2 border-b border-gray-200 text-center text-sm font-medium text-gray-700">
+                <th className="px-4 py-2 border-b text-center text-sm font-medium text-gray-700">
                   Required
                 </th>
-                <th className="px-4 py-2 border-b border-gray-200"></th>
+                <th className="px-4 py-2 border-b"></th>
               </tr>
             </thead>
             <tbody>
@@ -170,19 +202,19 @@ const DynamicFieldsManager = () => {
               )}
               {fields.map((field, index) => (
                 <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border-b border-gray-200 text-sm text-gray-700">
+                  <td className="px-4 py-2 border-b text-sm text-gray-700">
                     {field.fieldName}
                   </td>
-                  <td className="px-4 py-2 border-b border-gray-200 text-sm text-gray-700">
+                  <td className="px-4 py-2 border-b text-sm text-gray-700">
                     {field.dataType}
                   </td>
-                  <td className="px-4 py-2 border-b border-gray-200 text-center text-sm text-gray-700">
+                  <td className="px-4 py-2 border-b text-center text-sm text-gray-700">
                     {field.isArray ? "Yes" : "No"}
                   </td>
-                  <td className="px-4 py-2 border-b border-gray-200 text-center text-sm text-gray-700">
+                  <td className="px-4 py-2 border-b text-center text-sm text-gray-700">
                     {field.isRequired ? "Yes" : "No"}
                   </td>
-                  <td className="px-4 py-2 border-b border-gray-200 text-right">
+                  <td className="px-4 py-2 border-b text-right">
                     <button
                       onClick={() => handleRemoveField(index)}
                       className="text-red-600 hover:text-red-800 text-sm"

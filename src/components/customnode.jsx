@@ -1,49 +1,98 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Handle, Position, NodeResizer, useReactFlow } from "@xyflow/react";
-import CustomForm from "./CustomForm";
+import DynamicFieldsManager from "./CustomForm";
 
-const CustomNode = ({ id, data, selected }) => {
+const CustomNode = ({ id, data = {}, selected }) => {
   const { setNodes } = useReactFlow();
-  const [label, setLabel] = useState(data.label);
+  const nodeRef = useRef(null);
+
+  const [label, setLabel] = useState(data.label || "Node");
   const [width, setWidth] = useState(data.width || 150);
   const [height, setHeight] = useState(data.height || 80);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: data.name || "",
-    phone: data.phone || "",
-  });
+  const [formData, setFormData] = useState(
+    data?.formData || { name: "", phone: "" }
+  );
+  const [dynamicFields, setDynamicFields] = useState(data?.dynamicFields || []);
 
-  // Update node data with label, size, and formData changes
+  useEffect(() => {
+    const savedFields = localStorage.getItem("allFields");
+    try {
+      const parsedFields = savedFields ? JSON.parse(savedFields) : {};
+      setDynamicFields(parsedFields[id] || []);
+    } catch (error) {
+      console.error("Error parsing allFields from localStorage:", error);
+      setDynamicFields([]);
+    }
+  }, [id]);
+
   useEffect(() => {
     setNodes((nodes) =>
-      nodes.map((node) =>
-        node.id === id
-          ? {
-              ...node,
-              data: { ...node.data, label, width, height, ...formData },
-            }
-          : node
-      )
+      nodes.map((node) => {
+        if (node.id === id) {
+          const updatedNode = {
+            ...node,
+            data: {
+              ...node.data,
+              label,
+              width,
+              height,
+              formData,
+              dynamicFields,
+            },
+          };
+          try {
+            const storedFields =
+              JSON.parse(localStorage.getItem("allFields")) || {};
+            storedFields[id] = dynamicFields;
+            localStorage.setItem("allFields", JSON.stringify(storedFields));
+          } catch (e) {
+            console.error("Error setting allFields to localStorage", e);
+          }
+          return JSON.stringify(node.data) === JSON.stringify(updatedNode.data)
+            ? node
+            : updatedNode;
+        }
+        return node;
+      })
     );
-  }, [label, width, height, formData, id, setNodes]);
+  }, [label, width, height, formData, dynamicFields, id, setNodes]);
 
-  // Modal control functions
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isModalOpen &&
+        nodeRef.current &&
+        !nodeRef.current.contains(event.target)
+      ) {
+        closeModal();
+      }
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") closeModal();
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isModalOpen]);
+
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
-  // Optional: Handle form changes if needed
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // Optional: Form submission handler
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    closeModal();
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <div
+      ref={nodeRef}
       style={{
         width,
         height,
@@ -56,9 +105,9 @@ const CustomNode = ({ id, data, selected }) => {
         justifyContent: "center",
         boxShadow: selected ? "0 0 10px rgba(0, 123, 255, 0.5)" : "none",
         position: "relative",
+        padding: "5px",
       }}
     >
-      {/* Node Resizer: Only visible when the node is selected */}
       {selected && (
         <NodeResizer
           minWidth={100}
@@ -73,59 +122,71 @@ const CustomNode = ({ id, data, selected }) => {
         />
       )}
 
-      {/* Editable Label */}
-      <textarea
-        value={label}
-        onChange={(e) => setLabel(e.target.value)}
+      <div
+        contentEditable
+        suppressContentEditableWarning
+        onBlur={(e) => setLabel(e.target.innerText)}
         style={{
           width: "100%",
-          height: "100%",
-          border: "none",
+          minHeight: "20px",
           textAlign: "center",
           fontSize: `${Math.max(12, width / 10)}px`,
           outline: "none",
           background: "transparent",
-          overflow: "hidden",
-          whiteSpace: "normal",
-          wordWrap: "break-word",
-          resize: "none",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
         }}
-      />
+      >
+        {label}
+      </div>
 
-      {/* + Button to open the modal form */}
       <button
         onClick={openModal}
-        style={{ position: "absolute", top: 5, right: 5, cursor: "pointer" }}
+        style={{
+          position: "absolute",
+          top: 5,
+          right: 5,
+          cursor: "pointer",
+          background: "#007bff",
+          color: "#fff",
+          border: "none",
+          padding: "4px 8px",
+          borderRadius: "4px",
+        }}
       >
         +
       </button>
 
-      {/* Render the CustomForm component when modal is open */}
       {isModalOpen && (
-        <CustomForm
-          formData={formData}
-          handleChange={handleChange}
-          handleFormSubmit={handleFormSubmit}
-          closeModal={closeModal}
-        />
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            background: "#fff",
+            padding: "10px",
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+            zIndex: 10,
+            borderRadius: "5px",
+            maxWidth: "650px",
+            overflow: "hidden",
+          }}
+        >
+          <DynamicFieldsManager nodeId={id} />
+        </div>
       )}
 
-      {/* Connection Handles */}
-      <Handle type="target" position={Position.Top} isConnectable={true} />
+      <Handle type="target" position={Position.Top} isConnectable />
       <Handle
         type="source"
         position={Position.Right}
         id="right"
-        isConnectable={true}
+        isConnectable
       />
       <Handle
         type="source"
         position={Position.Bottom}
         id="bottom"
-        isConnectable={true}
+        isConnectable
       />
     </div>
   );
