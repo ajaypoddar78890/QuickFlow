@@ -6,6 +6,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
   const { setNodes } = useReactFlow();
   const nodeRef = useRef(null);
 
+  // Editable states for node data
   const [label, setLabel] = useState(data.label || "Node");
   const [width, setWidth] = useState(data.width || 150);
   const [height, setHeight] = useState(data.height || 80);
@@ -16,6 +17,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
   const [dynamicFields, setDynamicFields] = useState(data?.dynamicFields || []);
 
   useEffect(() => {
+    // Load stored fields from localStorage (for persistence)
     const savedFields = localStorage.getItem("allFields");
     try {
       const parsedFields = savedFields ? JSON.parse(savedFields) : {};
@@ -27,60 +29,27 @@ const CustomNode = ({ id, data = {}, selected }) => {
   }, [id]);
 
   useEffect(() => {
+    // Update node properties when edited
     setNodes((nodes) =>
-      nodes.map((node) => {
-        if (node.id === id) {
-          const updatedNode = {
-            ...node,
-            data: {
-              ...node.data,
-              label,
-              width,
-              height,
-              formData,
-              dynamicFields,
-            },
-          };
-          try {
-            const storedFields =
-              JSON.parse(localStorage.getItem("allFields")) || {};
-            storedFields[id] = dynamicFields;
-            localStorage.setItem("allFields", JSON.stringify(storedFields));
-          } catch (e) {
-            console.error("Error setting allFields to localStorage", e);
-          }
-          return JSON.stringify(node.data) === JSON.stringify(updatedNode.data)
-            ? node
-            : updatedNode;
-        }
-        return node;
-      })
+      nodes.map((node) =>
+        node.id === id
+          ? {
+              ...node,
+              data: { label, width, height, formData, dynamicFields },
+            }
+          : node
+      )
     );
+
+    // Persist changes in localStorage
+    try {
+      const storedFields = JSON.parse(localStorage.getItem("allFields")) || {};
+      storedFields[id] = dynamicFields;
+      localStorage.setItem("allFields", JSON.stringify(storedFields));
+    } catch (e) {
+      console.error("Error saving allFields to localStorage", e);
+    }
   }, [label, width, height, formData, dynamicFields, id, setNodes]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        isModalOpen &&
-        nodeRef.current &&
-        !nodeRef.current.contains(event.target)
-      ) {
-        closeModal();
-      }
-    };
-
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") closeModal();
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isModalOpen]);
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
@@ -108,6 +77,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
         padding: "5px",
       }}
     >
+      {/* Resizable Node */}
       {selected && (
         <NodeResizer
           minWidth={100}
@@ -122,6 +92,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
         />
       )}
 
+      {/* Editable Node Label */}
       <div
         contentEditable
         suppressContentEditableWarning
@@ -138,6 +109,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
         {label}
       </div>
 
+      {/* Open Modal Button */}
       <button
         onClick={openModal}
         style={{
@@ -155,6 +127,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
         +
       </button>
 
+      {/* Modal for Editing Fields */}
       {isModalOpen && (
         <div
           style={{
@@ -179,6 +152,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
         </div>
       )}
 
+      {/* Connection Handles */}
       <Handle type="target" position={Position.Top} isConnectable />
       <Handle
         type="source"

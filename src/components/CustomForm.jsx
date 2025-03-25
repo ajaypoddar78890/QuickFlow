@@ -81,7 +81,7 @@ const DynamicFieldsManager = ({ nodeId, closeModal }) => {
     try {
       await navigator.clipboard.writeText(JSON.stringify(fields, null, 2));
       toast.success("Copied to Clipboard!");
-    } catch (error) {
+    } catch {
       toast.error("Failed to copy data!");
     }
   };
