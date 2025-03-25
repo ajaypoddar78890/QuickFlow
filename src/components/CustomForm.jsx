@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast, Toaster } from "sonner";
 
-const DynamicFieldsManager = ({ nodeId }) => {
+const DynamicFieldsManager = ({ nodeId, closeModal }) => {
   const [allFields, setAllFields] = useState(() => {
     const savedData = localStorage.getItem("allFields");
     try {
@@ -228,12 +228,18 @@ const DynamicFieldsManager = ({ nodeId }) => {
           </table>
         </div>
 
-        <div className="mt-4 flex justify-end">
+        <div className="mt-4 flex justify-end gap-2">
           <button
             onClick={handleExport}
             className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
           >
             Export JSON
+          </button>
+          <button
+            onClick={closeModal}
+            className="bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500"
+          >
+            Close
           </button>
         </div>
       </div>

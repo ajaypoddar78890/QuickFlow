@@ -171,7 +171,11 @@ const CustomNode = ({ id, data = {}, selected }) => {
             overflow: "hidden",
           }}
         >
-          <DynamicFieldsManager nodeId={id} />
+          <DynamicFieldsManager
+            nodeId={id}
+            handleChange={handleChange}
+            closeModal={closeModal}
+          />
         </div>
       )}
 
