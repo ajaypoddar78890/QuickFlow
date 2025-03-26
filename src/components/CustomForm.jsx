@@ -90,7 +90,7 @@ const DynamicFieldsManager = ({ nodeId, closeModal }) => {
     <div className="h-auto bg-gray-100 p-4 z-30">
       <div className="min-w-xl mx-auto bg-white p-6 rounded shadow">
         <h1 className="text-2xl font-bold mb-4">
-          Collection Detail-Form (Node {nodeId})
+          Collection Detail-Form 
         </h1>
 
         <form onSubmit={handleAddField} className="flex flex-col gap-4 mb-6">
@@ -164,7 +164,7 @@ const DynamicFieldsManager = ({ nodeId, closeModal }) => {
 
           <button
             type="submit"
-            className="self-end bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+            className="self-end bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 cursor-pointer"
           >
             Add Field
           </button>
@@ -231,13 +231,13 @@ const DynamicFieldsManager = ({ nodeId, closeModal }) => {
         <div className="mt-4 flex justify-end gap-2">
           <button
             onClick={handleExport}
-            className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+            className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 cursor-pointer"
           >
             Export JSON
           </button>
           <button
             onClick={closeModal}
-            className="bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500"
+            className="bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500 cursor-pointer"
           >
             Close
           </button>

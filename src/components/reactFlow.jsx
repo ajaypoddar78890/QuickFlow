@@ -141,7 +141,7 @@ const ReactFlowComponent = () => {
   };
 
   return (
-    <div className="w-full h-full flex items-center justify-center overflow-hidden pl-20">
+    <div className="w-full h-full flex items-center justify-center overflow-hidden pl-20 z-10">
       <div className="w-[80vw] h-[90vh] border border-gray-300 rounded-lg shadow-lg relative flex flex-col">
         <div className="w-full h-16 bg-gray-400 flex items-center justify-start rounded-t-lg">
           <button
@@ -164,7 +164,7 @@ const ReactFlowComponent = () => {
             snapToGrid={true}
             snapGrid={[20, 20]}
             connectionLineType="smoothstep"
-            className="w-full h-full"
+            className="w-full h-full bg-green-400"
           >
             <MiniMap />
             <Controls />

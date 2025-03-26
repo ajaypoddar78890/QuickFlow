@@ -45,7 +45,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
         height,
         border: selected ? "2px solid #007bff" : "1px solid #ccc",
         background: "#fff",
-        borderRadius: 5,
+        borderRadius: 2,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -74,7 +74,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
         value={title}
         onChange={handleTitleChange}
         style={{
-          fontSize: "14px",
+          fontSize: "10px",
           fontWeight: "bold",
           textAlign: "center",
           outline: "none",
@@ -97,7 +97,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
           background: "#007bff",
           color: "#fff",
           border: "none",
-          padding: "4px 8px",
+          padding: "0px 4px",
           borderRadius: "4px",
         }}
       >
@@ -114,7 +114,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
             background: "#fff",
             padding: "10px",
             boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
-            zIndex: 10,
+            zIndex: 999,
             borderRadius: "5px",
             maxWidth: "650px",
             overflow: "hidden",
@@ -128,20 +128,32 @@ const CustomNode = ({ id, data = {}, selected }) => {
         </div>
       )}
 
-      <Handle type="target" position={Position.Top} isConnectable />
+      <Handle
+        type="target"
+        position={Position.Top}
+        isConnectable
+        className="!w-4 !h-2 !bg-teal-500 !rounded-none"
+      />
       <Handle
         type="source"
         position={Position.Right}
         id="right"
         isConnectable
+        className="!w-1 !h-4 !bg-red-600 !rounded-none"
       />
       <Handle
         type="source"
         position={Position.Bottom}
         id="bottom"
         isConnectable
+        className="!w-4  !h-2 !bg-teal-500 !rounded-none"
       />
-      <Handle type="target" position={Position.Left} isConnectable />
+      <Handle
+        type="source"
+        position={Position.Left}
+        isConnectable
+        className="!w-1 !h-4 !bg-red-500 !rounded-none"
+      />
     </div>
   );
 };
