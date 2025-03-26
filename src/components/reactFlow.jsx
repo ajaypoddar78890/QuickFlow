@@ -161,7 +161,7 @@ const ReactFlowComponent = () => {
         <div className="w-full h-16 bg-gray-400 flex items-center justify-between px-4 rounded-t-lg">
           <button
             onClick={addNewNode}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-600 transition-all"
+            className="bg-black text-white px-4 py-2 rounded-md shadow-lg "
           >
             Add Node
           </button>

@@ -159,19 +159,19 @@ const Sidebar = ({ flowRef }) => {
 
       <h2 className="text-2xl text-white font-bold ">QuickFlow</h2>
 
-      <ul className="mt-6 space-y-2">
+      <ul className="mt-6 space-y-3">
         <li
           onClick={triggerFileInput}
           className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500"
         >
-          <FileText size={30} />
+          <FileText size={25} />
           {isOpen && <span>Open</span>}
         </li>
         <li
           onClick={handleSaveToFile}
           className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500"
         >
-          <Save size={30} />
+          <Save size={25} />
           {isOpen && <span>Save to...</span>}
         </li>
         {/* Export Image list item with onClick to trigger screenshot */}
@@ -179,7 +179,7 @@ const Sidebar = ({ flowRef }) => {
           onClick={handleExportImage}
           className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500"
         >
-          <Image size={30} />
+          <Image size={25} />
           {isOpen && <span>Export Image</span>}
         </li>
         <li
@@ -191,7 +191,7 @@ const Sidebar = ({ flowRef }) => {
           }}
           className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500"
         >
-          <Users size={30} />
+          <Users size={25} />
           {isOpen && <span>Live Collaboration</span>}
         </li>
         <li
@@ -203,51 +203,52 @@ const Sidebar = ({ flowRef }) => {
           }}
           className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500"
         >
-          <Command size={30} />
+          <Command size={25} />
           {isOpen && <span>Command Palette</span>}
         </li>
         <li
           onClick={handleFindOnCanvas}
           className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500"
         >
-          <Search size={30} />
+          <Search size={25} />
           {isOpen && <span>Find on Canvas</span>}
         </li>
         <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
-          <HelpCircle size={30} />
+          <HelpCircle size={25} />
           {isOpen && <span>Help</span>}
         </li>
         <li
           onClick={handleResetCanvas}
           className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-red-500"
         >
-          <Trash2 size={30} />
+          <Trash2 size={25} />
           {isOpen && <span>Reset Canvas</span>}
         </li>
         <li className="border-t border-gray-300 dark:border-gray-700 pt-4"></li>
         <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-yellow-500">
-          <Star size={30} />
+          <Star size={25} />
           {isOpen && <span>QuickFlow</span>}
         </li>
         <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-white">
-          <Github size={30} />
+          <Github size={25} />
           {isOpen && <span>GitHub</span>}
         </li>
         <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500">
-          <UserPlus size={30} />
+          <UserPlus size={25} />
           {isOpen && <span>Follow Us</span>}
         </li>
         <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-purple-500">
-          <MessageSquare size={30} />
+          <MessageSquare size={25} />
           {isOpen && <span>Discord Chat</span>}
         </li>
         <li className="border-t border-gray-300 dark:border-gray-700 pt-4"></li>
-        <li className="flex items-center space-x-3 text-blue-500 cursor-pointer hover:text-blue-700">
-          {isOpen && <span>Sign Up</span>}
-        </li>
+
         <li className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer">
-          <Sun size={30} />
+          <Sun size={25} />
           {isOpen && <span>Theme</span>}
+        </li>
+        <li className="flex items-center space-x-3 ml-8 mt-5 text-white cursor-pointer ">
+          {isOpen && <span>Sign Up</span>}
         </li>
       </ul>
       <input
