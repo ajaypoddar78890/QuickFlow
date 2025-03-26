@@ -94,7 +94,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
           top: 5,
           right: 5,
           cursor: "pointer",
-          background: "#007bff",
+          background: " #000000",
           color: "#fff",
           border: "none",
           padding: "0px 4px",

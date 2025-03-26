@@ -159,7 +159,7 @@ const Sidebar = ({ flowRef }) => {
 
       <h2 className="text-2xl text-white font-bold ">QuickFlow</h2>
 
-      <ul className="mt-10 space-y-4">
+      <ul className="mt-6 space-y-2">
         <li
           onClick={triggerFileInput}
           className="flex items-center space-x-3 text-gray-800 dark:text-gray-200 cursor-pointer hover:text-blue-500"

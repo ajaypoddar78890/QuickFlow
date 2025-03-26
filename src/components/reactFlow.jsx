@@ -8,10 +8,12 @@ import {
   useNodesState,
   useEdgesState,
   addEdge,
+  useReactFlow,
 } from "@xyflow/react";
 import CustomNode from "./customnode";
 import CustomEdge from "./CustomEdge";
 import "@xyflow/react/dist/style.css";
+import { FaSearchPlus, FaSearchMinus } from "react-icons/fa";
 
 const nodeTypes = {
   customNode: CustomNode,
@@ -19,8 +21,7 @@ const nodeTypes = {
 
 const getSavedData = () => {
   const savedData = localStorage.getItem("reactFlowData");
-  if (!savedData) return null;
-  return JSON.parse(savedData);
+  return savedData ? JSON.parse(savedData) : null;
 };
 
 const ReactFlowComponent = () => {
@@ -41,6 +42,8 @@ const ReactFlowComponent = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     savedData?.edges || []
   );
+
+  const { zoomIn, zoomOut, setViewport, getZoom } = useReactFlow(); // ✅ Added viewport control
 
   const edgeTypes = useMemo(
     () => ({
@@ -96,7 +99,7 @@ const ReactFlowComponent = () => {
         data: {
           label: "Node",
           details: `Details for ${newNodeId}`,
-          formData: { name: "", phone: "" }, // ✅ Added formData
+          formData: { name: "", phone: "" },
         },
       };
 
@@ -119,7 +122,7 @@ const ReactFlowComponent = () => {
 
   const addNewNode = () => {
     const newNodeId = uuidv4();
-    console.log("New Node UUID:", newNodeId); // Log each new UUID
+    console.log("New Node UUID:", newNodeId);
 
     const newNode = {
       id: newNodeId,
@@ -128,7 +131,7 @@ const ReactFlowComponent = () => {
       data: {
         label: "Node",
         details: `Details for ${newNodeId}`,
-        formData: { name: "", phone: "" }, // ✅ Added formData
+        formData: { name: "", phone: "" },
       },
     };
 
@@ -140,16 +143,43 @@ const ReactFlowComponent = () => {
     );
   };
 
+  // ✅ Smooth Zooming Function
+  const handleZoom = (zoomType) => {
+    const currentZoom = getZoom();
+    let newZoom = zoomType === "in" ? currentZoom * 1.2 : currentZoom / 1.2;
+
+    // Restrict Zoom Limits (Min: 0.5, Max: 2.5)
+    newZoom = Math.max(0.5, Math.min(2.5, newZoom));
+
+    setViewport({ x: 0, y: 0, zoom: newZoom }, { duration: 300 }); // Smooth transition
+  };
+
   return (
     <div className="w-full h-full flex items-center justify-center overflow-hidden pl-20 z-10">
       <div className="w-[80vw] h-[90vh] border border-gray-300 rounded-lg shadow-lg relative flex flex-col">
-        <div className="w-full h-16 bg-gray-400 flex items-center justify-start rounded-t-lg">
+        {/* ✅ Header with Add Node & Smooth Zoom Buttons */}
+        <div className="w-full h-16 bg-gray-400 flex items-center justify-between px-4 rounded-t-lg">
           <button
             onClick={addNewNode}
-            className="ml-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-600 transition-all"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-600 transition-all"
           >
             Add Node
           </button>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleZoom("in")}
+              className="bg-gray-800 text-white px-3 py-2 rounded-md shadow-lg hover:bg-gray-900 transition-all flex items-center gap-2"
+            >
+              <FaSearchPlus /> Zoom In
+            </button>
+            <button
+              onClick={() => handleZoom("out")}
+              className="bg-gray-800 text-white px-3 py-2 rounded-md shadow-lg hover:bg-gray-900 transition-all flex items-center gap-2"
+            >
+              <FaSearchMinus /> Zoom Out
+            </button>
+          </div>
         </div>
 
         <div className="flex-grow">

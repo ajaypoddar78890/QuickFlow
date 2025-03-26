@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { toast, Toaster } from "sonner";
+import { FaTrash } from "react-icons/fa";
 
 const DynamicFieldsManager = ({ nodeId, closeModal }) => {
   const [allFields, setAllFields] = useState(() => {
@@ -89,9 +90,7 @@ const DynamicFieldsManager = ({ nodeId, closeModal }) => {
   return (
     <div className="h-auto bg-gray-100 p-4 z-30">
       <div className="min-w-xl mx-auto bg-white p-6 rounded shadow">
-        <h1 className="text-2xl font-bold mb-4">
-          Collection Detail-Form 
-        </h1>
+        <h1 className="text-2xl font-bold mb-4">Collection Detail-Form</h1>
 
         <form onSubmit={handleAddField} className="flex flex-col gap-4 mb-6">
           <div>
@@ -214,12 +213,12 @@ const DynamicFieldsManager = ({ nodeId, closeModal }) => {
                   <td className="px-4 py-2 border-b text-center text-sm text-gray-700">
                     {field.isRequired ? "Yes" : "No"}
                   </td>
-                  <td className="px-4 py-2 border-b text-right">
+                  <td className="px-4 py-2 border-b text-right cursor-pointer">
                     <button
                       onClick={() => handleRemoveField(index)}
-                      className="text-red-600 hover:text-red-800 text-sm"
+                      className="text-red-600 hover:text-red-800 text-sm flex items-center gap-1"
                     >
-                      Remove
+                      <FaTrash />
                     </button>
                   </td>
                 </tr>
@@ -237,7 +236,7 @@ const DynamicFieldsManager = ({ nodeId, closeModal }) => {
           </button>
           <button
             onClick={closeModal}
-            className="bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500 cursor-pointer"
+            className="bg-black text-white py-2 px-4 rounded   cursor-pointer"
           >
             Close
           </button>
