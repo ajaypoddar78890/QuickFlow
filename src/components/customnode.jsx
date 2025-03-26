@@ -5,59 +5,37 @@ import DynamicFieldsManager from "./CustomForm";
 const CustomNode = ({ id, data = {}, selected }) => {
   const { setNodes } = useReactFlow();
   const nodeRef = useRef(null);
+  const titleRef = useRef(null);
 
-  // Editable states for node data
-  const [label, setLabel] = useState(data.label || "Node");
+  const [title, setTitle] = useState(data.title || "Node Title");
   const [width, setWidth] = useState(data.width || 150);
   const [height, setHeight] = useState(data.height || 80);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [formData, setFormData] = useState(
-    data?.formData || { name: "", phone: "" }
-  );
+  const [formData, setFormData] = useState(data?.formData || {});
   const [dynamicFields, setDynamicFields] = useState(data?.dynamicFields || []);
 
   useEffect(() => {
-    // Load stored fields from localStorage (for persistence)
-    const savedFields = localStorage.getItem("allFields");
-    try {
-      const parsedFields = savedFields ? JSON.parse(savedFields) : {};
-      setDynamicFields(parsedFields[id] || []);
-    } catch (error) {
-      console.error("Error parsing allFields from localStorage:", error);
-      setDynamicFields([]);
-    }
-  }, [id]);
-
-  useEffect(() => {
-    // Update node properties when edited
     setNodes((nodes) =>
       nodes.map((node) =>
         node.id === id
-          ? {
-              ...node,
-              data: { label, width, height, formData, dynamicFields },
-            }
+          ? { ...node, data: { title, width, height, formData, dynamicFields } }
           : node
       )
     );
+  }, [title, width, height, formData, dynamicFields, id, setNodes]);
 
-    // Persist changes in localStorage
-    try {
-      const storedFields = JSON.parse(localStorage.getItem("allFields")) || {};
-      storedFields[id] = dynamicFields;
-      localStorage.setItem("allFields", JSON.stringify(storedFields));
-    } catch (e) {
-      console.error("Error saving allFields to localStorage", e);
+  useEffect(() => {
+    if (selected && titleRef.current) {
+      titleRef.current.focus();
     }
-  }, [label, width, height, formData, dynamicFields, id, setNodes]);
+  }, [selected]);
+
+  const handleTitleChange = (event) => {
+    setTitle(event.target.value);
+  };
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   return (
     <div
@@ -77,7 +55,6 @@ const CustomNode = ({ id, data = {}, selected }) => {
         padding: "5px",
       }}
     >
-      {/* Resizable Node */}
       {selected && (
         <NodeResizer
           minWidth={100}
@@ -92,24 +69,24 @@ const CustomNode = ({ id, data = {}, selected }) => {
         />
       )}
 
-      {/* Editable Node Label */}
-      <div
-        contentEditable
-        suppressContentEditableWarning
-        onBlur={(e) => setLabel(e.target.innerText)}
+      <textarea
+        ref={titleRef}
+        value={title}
+        onChange={handleTitleChange}
         style={{
-          width: "100%",
-          minHeight: "20px",
+          fontSize: "14px",
+          fontWeight: "bold",
           textAlign: "center",
-          fontSize: `${Math.max(12, width / 10)}px`,
           outline: "none",
+          cursor: "text",
+          width: "100%",
+          padding: "5px",
+          border: "none",
+          resize: "none",
           background: "transparent",
         }}
-      >
-        {label}
-      </div>
+      />
 
-      {/* Open Modal Button */}
       <button
         onClick={openModal}
         style={{
@@ -127,7 +104,6 @@ const CustomNode = ({ id, data = {}, selected }) => {
         +
       </button>
 
-      {/* Modal for Editing Fields */}
       {isModalOpen && (
         <div
           style={{
@@ -146,13 +122,12 @@ const CustomNode = ({ id, data = {}, selected }) => {
         >
           <DynamicFieldsManager
             nodeId={id}
-            handleChange={handleChange}
+            handleChange={() => {}}
             closeModal={closeModal}
           />
         </div>
       )}
 
-      {/* Connection Handles */}
       <Handle type="target" position={Position.Top} isConnectable />
       <Handle
         type="source"
@@ -166,6 +141,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
         id="bottom"
         isConnectable
       />
+      <Handle type="target" position={Position.Left} isConnectable />
     </div>
   );
 };
