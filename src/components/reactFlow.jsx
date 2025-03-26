@@ -43,7 +43,7 @@ const ReactFlowComponent = () => {
     savedData?.edges || []
   );
 
-  const { zoomIn, zoomOut, setViewport, getZoom } = useReactFlow(); // ✅ Added viewport control
+  const { setViewport, getZoom } = useReactFlow(); // ✅ Added viewport control
 
   const edgeTypes = useMemo(
     () => ({
@@ -75,10 +75,46 @@ const ReactFlowComponent = () => {
           style: { stroke: "#007bff", strokeWidth: 2 },
           type: "custom",
         };
+
         setEdges((eds) => addEdge(newEdge, eds));
+
+        // **Update Nodes to Store Connections in Data Object**
+        setNodes((nodes) =>
+          nodes.map((node) =>
+            node.id === params.source
+              ? {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    connectedTo: [
+                      ...(node.data.connectedTo || []),
+                      params.target,
+                    ], // Track Target
+                  },
+                }
+              : node.id === params.target
+              ? {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    connectedTo: [
+                      ...(node.data.connectedTo || []),
+                      params.source,
+                    ], // Track Source
+                  },
+                }
+              : node
+          )
+        );
+
+        // **Debugging Logs**
+        console.log("Connected Nodes:", params.source, "→", params.target);
+        console.log("Updated Source Node:", sourceNode);
+        console.log("Updated Target Node:", targetNode);
         return;
       }
 
+      // **Create a New Node and Store Parent Connection**
       const newNodeId = uuidv4();
       let newPosition = {
         x: sourceNode.position.x,
@@ -100,6 +136,7 @@ const ReactFlowComponent = () => {
           label: "Node",
           details: `Details for ${newNodeId}`,
           formData: { name: "", phone: "" },
+          connectedTo: [params.source], // Store Parent Connection
         },
       };
 
@@ -116,6 +153,15 @@ const ReactFlowComponent = () => {
       };
 
       setEdges((eds) => addEdge(newEdge, eds));
+
+      // **Debugging Logs**
+      console.log(
+        "Created New Node:",
+        newNodeId,
+        "Connected to Parent:",
+        params.source
+      );
+      console.log("New Node Details:", newNode);
     },
     [nodes, setNodes, setEdges]
   );
