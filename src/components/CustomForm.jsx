@@ -94,11 +94,13 @@ const DynamicFieldsManager = ({ nodeId, closeModal }) => {
       }));
 
       await navigator.clipboard.writeText(JSON.stringify(exportData, null, 2));
-      console.log("Nodes Before Export:", nodes.map((node) => ({
-        id: node.id,
-        data: node.data // Check if data contains connectedTo
-      })));
-      
+      console.log(
+        "Nodes Before Export:",
+        nodes.map((node) => ({
+          id: node.id,
+          connectedTo: node.data?.connectedTo,
+        }))
+      );
 
       toast.success("Copied to Clipboard!");
       console.log("Final Export Data:", JSON.stringify(exportData, null, 2));
