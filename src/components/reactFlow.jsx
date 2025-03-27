@@ -241,6 +241,7 @@ const ReactFlowComponent = () => {
             snapGrid={[20, 20]}
             connectionLineType="smoothstep"
             className="w-full h-full bg-green-400"
+            nodedata={nodes}
           >
             <MiniMap />
             <Controls />

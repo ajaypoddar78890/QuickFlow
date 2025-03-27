@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { toast, Toaster } from "sonner";
 import { FaTrash } from "react-icons/fa";
+import { useReactFlow } from "@xyflow/react";
 
 const DynamicFieldsManager = ({ nodeId, closeModal }) => {
+  const { getNodes } = useReactFlow();
+  const nodes = getNodes(); // Fetch the latest nodes
+
   const [allFields, setAllFields] = useState(() => {
     const savedData = localStorage.getItem("allFields");
     try {
@@ -80,10 +84,27 @@ const DynamicFieldsManager = ({ nodeId, closeModal }) => {
 
   const handleExport = async () => {
     try {
-      await navigator.clipboard.writeText(JSON.stringify(fields, null, 2));
+      const exportData = fields.map((field) => ({
+        fieldName: field.fieldName,
+        dataType: field.dataType,
+        isArray: field.isArray,
+        isRequired: field.isRequired,
+        connectedTo:
+          nodes.find((node) => node.id === field.id)?.data?.connectedTo || [], // Fetch connectedTo
+      }));
+
+      await navigator.clipboard.writeText(JSON.stringify(exportData, null, 2));
+      console.log("Nodes Before Export:", nodes.map((node) => ({
+        id: node.id,
+        data: node.data // Check if data contains connectedTo
+      })));
+      
+
       toast.success("Copied to Clipboard!");
-    } catch {
+      console.log("Final Export Data:", JSON.stringify(exportData, null, 2));
+    } catch (error) {
       toast.error("Failed to copy data!");
+      console.error("Export Error:", error);
     }
   };
 
