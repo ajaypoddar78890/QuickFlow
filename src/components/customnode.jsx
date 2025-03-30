@@ -1,66 +1,48 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Handle, Position, NodeResizer, useReactFlow } from "@xyflow/react";
-import DynamicFieldsManager from "./CustomForm";
+import React, { useState, useRef } from "react";
+import { Handle, Position, NodeResizer } from "@xyflow/react";
+import { FaPlus } from "react-icons/fa";
+import CustomNodeForm from "./CustomNodeForm"; // Import your CustomNodeForm component
 
 const CustomNode = ({ id, data = {}, selected }) => {
-  const { setNodes } = useReactFlow();
   const nodeRef = useRef(null);
   const titleRef = useRef(null);
 
   const [title, setTitle] = useState(data.title || "Node Title");
-  const [width, setWidth] = useState(data.width || 150);
-  const [height, setHeight] = useState(data.height || 80);
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [formData, setFormData] = useState(data?.formData || {});
-  const [dynamicFields, setDynamicFields] = useState(data?.dynamicFields || []);
+  const [width, setWidth] = useState(data.width || 250);
+  const [height, setHeight] = useState(data.height || 100);
+  const [showModal, setShowModal] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedType, setSelectedType] = useState(null);
 
-  useEffect(() => {
-    setNodes((nodes) =>
-      nodes.map((node) =>
-        node.id === id
-          ? { ...node, data: { title, width, height, formData, dynamicFields } }
-          : node
-      )
-    );
-  }, [title, width, height, formData, dynamicFields, id, setNodes]);
-
-  useEffect(() => {
-    if (selected && titleRef.current) {
-      titleRef.current.focus();
-    }
-  }, [selected]);
-
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value);
+  const handlePlusClick = () => {
+    setShowModal(true);
+    setShowDropdown(true);
   };
 
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
+  const closeModal = () => {
+    setShowModal(false);
+    setShowDropdown(false);
+    setSelectedType(null);
+  };
+
+  const handleTypeSelect = (type) => {
+    setSelectedType(type);
+    setShowDropdown(false);
+  };
 
   return (
     <div
       ref={nodeRef}
-      style={{
-        width,
-        height,
-        border: selected ? "2px solid #007bff" : "1px solid #ccc",
-        background: "#fff",
-        borderRadius: 2,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        boxShadow: selected ? "0 0 10px rgba(0, 123, 255, 0.5)" : "none",
-        position: "relative",
-        padding: "5px",
-      }}
+      className={`bg-gray-800 text-white border ${
+        selected ? "border-blue-500 shadow-lg" : "border-gray-700"
+      } rounded-md flex flex-col relative p-3 w-[${width}px] h-[${height}px]`}
     >
       {selected && (
         <NodeResizer
-          minWidth={100}
-          minHeight={50}
-          maxWidth={300}
-          maxHeight={200}
+          minWidth={150}
+          minHeight={100}
+          maxWidth={400}
+          maxHeight={300}
           isVisible={selected}
           onResizeEnd={(event, params) => {
             setWidth(params.width);
@@ -69,90 +51,83 @@ const CustomNode = ({ id, data = {}, selected }) => {
         />
       )}
 
-      <textarea
-        ref={titleRef}
-        value={title}
-        onChange={handleTitleChange}
-        style={{
-          fontSize: "10px",
-          fontWeight: "bold",
-          textAlign: "center",
-          outline: "none",
-          cursor: "text",
-          width: "100%",
-          padding: "5px",
-          border: "none",
-          resize: "none",
-          background: "transparent",
-        }}
-      />
+      {/* Title Bar */}
+      <div className="flex justify-between items-start mb-2">
+        <textarea
+          ref={titleRef}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="text-sm font-semibold outline-none cursor-text w-3/4 text-center border-none resize-none bg-transparent text-white"
+        />
+        <FaPlus
+          className="text-blue-500 cursor-pointer text-lg mt-2"
+          onClick={handlePlusClick}
+        />
+      </div>
 
-      <button
-        onClick={openModal}
-        style={{
-          position: "absolute",
-          top: 5,
-          right: 5,
-          cursor: "pointer",
-          background: " #000000",
-          color: "#fff",
-          border: "none",
-          padding: "0px 4px",
-          borderRadius: "4px",
-        }}
-      >
-        +
-      </button>
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
+          <div className="bg-gray-900 rounded-lg shadow-xl p-6 w-[600px] max-w-[90%]">
+            {/* Modal Content */}
+            {showDropdown && (
+              <div className="mb-4">
+                <select
+                  onChange={(e) => handleTypeSelect(e.target.value)}
+                  className="w-full p-2 rounded bg-gray-800 border border-gray-700 text-white cursor-pointer"
+                >
+                  <option value="">Select Type</option>
+                  <option value="image">Image</option>
+                  <option value="video">Video</option>
+                  <option value="videoCall">Video Call</option>
+                </select>
+              </div>
+            )}
 
-      {isModalOpen && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            background: "#fff",
-            padding: "10px",
-            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
-            zIndex: 999,
-            borderRadius: "5px",
-            maxWidth: "650px",
-            overflow: "hidden",
-          }}
-        >
-          <DynamicFieldsManager
-            nodeId={id}
-            handleChange={() => {}}
-            closeModal={closeModal}
-          />
+            {selectedType && (
+              <div className="bg-gray-800 rounded-lg p-4">
+                <CustomNodeForm type={selectedType} onClose={closeModal} />
+              </div>
+            )}
+
+            {!selectedType && (
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={closeModal}
+                  className="px-4 py-2 bg-blue-500 text-white rounded"
+                >
+                  Close
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
+      {/* Connection Handles */}
       <Handle
         type="target"
         position={Position.Top}
         isConnectable
-        className="!w-4 !h-2 !bg-teal-500 !rounded-none"
+        className="w-4 h-2 bg-teal-500 rounded-none"
       />
       <Handle
         type="source"
         position={Position.Right}
-        id="right"
         isConnectable
-        className="!w-1 !h-4 !bg-red-600 !rounded-none"
+        className="w-1 h-4 bg-red-600 rounded-none"
       />
       <Handle
         type="source"
         position={Position.Bottom}
-        id="bottom"
         isConnectable
-        className="!w-4  !h-2 !bg-teal-500 !rounded-none"
+        className="w-4 h-2 bg-teal-500 rounded-none"
       />
       <Handle
         type="source"
         position={Position.Left}
         isConnectable
-        className="!w-1 !h-4 !bg-red-500 !rounded-none"
+        className="w-1 h-4 bg-red-500 rounded-none"
       />
     </div>
   );
