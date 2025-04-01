@@ -1,33 +1,25 @@
 import React, { useState, useRef } from "react";
 import { Handle, Position, NodeResizer } from "@xyflow/react";
 import { FaPlus } from "react-icons/fa";
-import CustomNodeForm from "./CustomNodeForm"; // Import your CustomNodeForm component
+import CustomNodeForm from "./CustomNodeForm";
 
 const CustomNode = ({ id, data = {}, selected }) => {
   const nodeRef = useRef(null);
   const titleRef = useRef(null);
 
   const [title, setTitle] = useState(data.title || "Node Title");
-  const [width, setWidth] = useState(data.width || 250);
+  const [width, setWidth] = useState(data.width || 300); // Node's smaller width
   const [height, setHeight] = useState(data.height || 100);
   const [showModal, setShowModal] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [selectedType, setSelectedType] = useState(null);
 
   const handlePlusClick = () => {
     setShowModal(true);
-    setShowDropdown(true);
   };
 
   const closeModal = () => {
     setShowModal(false);
-    setShowDropdown(false);
     setSelectedType(null);
-  };
-
-  const handleTypeSelect = (type) => {
-    setSelectedType(type);
-    setShowDropdown(false);
   };
 
   return (
@@ -35,7 +27,8 @@ const CustomNode = ({ id, data = {}, selected }) => {
       ref={nodeRef}
       className={`bg-gray-800 text-white border ${
         selected ? "border-blue-500 shadow-lg" : "border-gray-700"
-      } rounded-md flex flex-col relative p-3 w-[${width}px] h-[${height}px]`}
+      } rounded-md flex flex-col relative p-3`}
+      style={{ width: `${width}px`, height: `${height}px` }} // Smaller node width
     >
       {selected && (
         <NodeResizer
@@ -67,34 +60,28 @@ const CustomNode = ({ id, data = {}, selected }) => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
-          <div className="bg-gray-900 rounded-lg shadow-xl p-6 w-[600px] max-w-[90%]">
-            {/* Modal Content */}
-            {showDropdown && (
-              <div className="mb-4">
-                <select
-                  onChange={(e) => handleTypeSelect(e.target.value)}
-                  className="w-full p-2 rounded bg-gray-800 border border-gray-700 text-white cursor-pointer"
-                >
-                  <option value="">Select Type</option>
-                  <option value="image">Image</option>
-                  <option value="video">Video</option>
-                  <option value="videoCall">Video Call</option>
-                </select>
-              </div>
-            )}
-
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 backdrop-blur-sm z-50">
+          <div className="bg-white text-black rounded-lg shadow-xl p-6 w-[850px]">
+            {" "}
+            {/* Fixed modal width */}
+            <h3 className="text-lg font-semibold mb-4">Select Type</h3>
+            <select
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="w-full p-2 mb-4 rounded bg-gray-800 border border-gray-700 text-white cursor-pointer"
+            >
+              <option value="">Select Type</option>
+              <option value="image">Image</option>
+              <option value="video">Video</option>
+              <option value="videoCall">Video Call</option>
+            </select>
             {selectedType && (
-              <div className="bg-gray-800 rounded-lg p-4">
-                <CustomNodeForm type={selectedType} onClose={closeModal} />
-              </div>
+              <CustomNodeForm type={selectedType} onClose={closeModal} />
             )}
-
             {!selectedType && (
               <div className="flex justify-end mt-4">
                 <button
                   onClick={closeModal}
-                  className="px-4 py-2 bg-blue-500 text-white rounded"
+                  className="px-4 py-2 bg-red-500 text-white rounded"
                 >
                   Close
                 </button>

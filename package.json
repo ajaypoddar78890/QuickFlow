@@ -13,6 +13,7 @@
     "@tailwindcss/vite": "^4.0.14",
     "@xyflow/react": "^12.4.4",
     "dom-to-image": "^2.6.0",
+    "formik": "^2.4.6",
     "html2canvas": "^1.4.1",
     "lucide-react": "^0.483.0",
     "react": "^19.0.0",
@@ -21,7 +22,8 @@
     "react-resizable": "^3.0.5",
     "sonner": "^2.0.1",
     "tailwindcss": "^4.0.14",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
