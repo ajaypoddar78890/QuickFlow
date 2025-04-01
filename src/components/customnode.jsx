@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Handle, Position, NodeResizer } from "@xyflow/react";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaTimes } from "react-icons/fa";
 import CustomNodeForm from "./CustomNodeForm";
 
 const CustomNode = ({ id, data = {}, selected }) => {
@@ -65,9 +65,10 @@ const CustomNode = ({ id, data = {}, selected }) => {
             <h3 className="text-lg font-semibold">Select Type</h3>
             <button
               onClick={closeModal}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-200 transition-colors duration-200"
             >
-              ×
+              <FaTimes className="text-xl" />{" "}
+              {/* Replace "×" with FaTimes icon */}
             </button>
           </div>
 
@@ -87,12 +88,12 @@ const CustomNode = ({ id, data = {}, selected }) => {
 
           {!selectedType && (
             <div className="flex justify-end mt-4">
-              <button
+              {/* <button
                 onClick={closeModal}
                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
               >
                 Close
-              </button>
+              </button> */}
             </div>
           )}
         </div>

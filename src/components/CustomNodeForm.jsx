@@ -34,7 +34,7 @@ const CustomNodeForm = ({ type, onClose }) => {
   return (
     <div className=" rounded shadow-lg w-full">
       {renderForm()}
-      <div className="flex justify-end mt-4">
+      <div className="flex justify-end mt-4 p-4">
         <button
           onClick={onClose}
           className="px-4 py-2 bg-red-500 text-white rounded"
