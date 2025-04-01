@@ -39,7 +39,7 @@ const ImageForm = ({ onSubmit }) => {
   });
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg  text-black">
+    <div className="bg-white p-6 rounded-lg   text-black">
       <h2 className="text-lg font-bold mb-4">🖼️ Upload Image Settings</h2>
       <form onSubmit={formik.handleSubmit} className="space-y-4">
         {/* Number of Images */}
