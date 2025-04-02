@@ -10,7 +10,6 @@ const CustomNode = ({ id, data = {}, selected }) => {
   const [title, setTitle] = useState(data.title || "Node Title");
   const [showModal, setShowModal] = useState(false);
   const [selectedType, setSelectedType] = useState(null);
-  const [modalPosition, setModalPosition] = useState({ x: 20, y: 40 });
 
   const handlePlusClick = () => {
     setShowModal(true);
@@ -54,13 +53,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
 
       {/* Absolutely Positioned Modal */}
       {showModal && (
-        <div
-          className="absolute z-50 bg-white text-black rounded-lg shadow-xl p-6 w-[500px] min-h-[400px]"
-          style={{
-            left: `${modalPosition.x}px`,
-            top: `${modalPosition.y}px`,
-          }}
-        >
+        <div className="absolute z-50 bg-white text-black rounded-lg shadow-xl p-6 w-[500px] min-h-[400px]">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Select Type</h3>
             <button

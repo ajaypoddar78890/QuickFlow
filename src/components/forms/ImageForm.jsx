@@ -4,107 +4,204 @@ import * as Yup from "yup";
 const ImageForm = ({ onSubmit }) => {
   const formik = useFormik({
     initialValues: {
-      numOfImages: "",
-      maxSize: "",
-      minSize: "",
-      maxWidth: "",
-      maxHeight: "",
+      images: [{ title: "", description: "" }], // Array of images
+      settings: {
+        maxSize: "", // Max file size in MB
+        width: "",
+        height: "",
+        mimeType: "",
+        minWidth: "",
+        minHeight: "",
+        maxWidth: "",
+        maxHeight: "",
+        watermark: false,
+        coordinate: false,
+      },
     },
     validationSchema: Yup.object({
-      numOfImages: Yup.number()
-        .min(1, "At least 1 image required")
-        .max(10, "Cannot upload more than 10 images")
-        .required("Required"),
-      maxSize: Yup.number()
-        .min(1, "Minimum size must be at least 1MB")
-        .max(10, "Maximum size must be less than 10MB")
-        .required("Required"),
-      minSize: Yup.number()
-        .min(1, "Minimum size must be at least 1MB")
-        .lessThan(Yup.ref("maxSize"), "Min size should be less than Max size")
-        .required("Required"),
-      maxWidth: Yup.number()
-        .min(100, "Width must be at least 100px")
-        .max(5000, "Width cannot exceed 5000px")
-        .required("Required"),
-      maxHeight: Yup.number()
-        .min(100, "Height must be at least 100px")
-        .max(5000, "Height cannot exceed 5000px")
-        .required("Required"),
+      images: Yup.array().of(
+        Yup.object().shape({
+          title: Yup.string().required("Title is required"),
+          description: Yup.string().required("Description is required"),
+        })
+      ),
+      settings: Yup.object().shape({
+        maxSize: Yup.number().min(1).max(10).required("Required"),
+        width: Yup.number().optional(),
+        height: Yup.number().optional(),
+        minWidth: Yup.number().optional(),
+        minHeight: Yup.number().optional(),
+        maxWidth: Yup.number().optional(),
+        maxHeight: Yup.number().optional(),
+        mimeType: Yup.string().optional(),
+      }),
     }),
     onSubmit: (values, { setSubmitting }) => {
+      console.log("Form Data:", values);
       onSubmit(values);
+      const JSonData = JSON.stringify(values, null, 2);
+      console.log(JSonData);
+
       setSubmitting(false);
     },
   });
 
   return (
-    <div className="bg-white p-6 rounded-lg   text-black">
+    <div className="bg-white p-6 rounded-lg text-black">
       <h2 className="text-lg font-bold mb-4">🖼️ Upload Image Settings</h2>
       <form onSubmit={formik.handleSubmit} className="space-y-4">
-        {/* Number of Images */}
-        <div>
-          <label className="block mb-1">Number of Images</label>
-          <input
-            type="number"
-            className="border rounded w-full p-2 text-black"
-            {...formik.getFieldProps("numOfImages")}
-          />
-          {formik.touched.numOfImages && formik.errors.numOfImages && (
-            <p className="text-red-500 text-sm">{formik.errors.numOfImages}</p>
-          )}
-        </div>
+        {/* Image Fields */}
+        {formik.values.images.map((image, index) => (
+          <div key={index} className="border p-4 rounded">
+            <h3 className="font-bold">Image {index + 1}</h3>
 
-        {/* Max Size */}
+            <div>
+              <label className="block mb-1">Title</label>
+              <input
+                type="text"
+                className="border rounded w-full p-2"
+                {...formik.getFieldProps(`images[${index}].title`)}
+              />
+              {formik.touched.images?.[index]?.title &&
+                formik.errors.images?.[index]?.title && (
+                  <p className="text-red-500 text-sm">
+                    {formik.errors.images[index].title}
+                  </p>
+                )}
+            </div>
+
+            <div>
+              <label className="block mb-1">Description</label>
+              <input
+                type="text"
+                className="border rounded w-full p-2"
+                {...formik.getFieldProps(`images[${index}].description`)}
+              />
+              {formik.touched.images?.[index]?.description &&
+                formik.errors.images?.[index]?.description && (
+                  <p className="text-red-500 text-sm">
+                    {formik.errors.images[index].description}
+                  </p>
+                )}
+            </div>
+          </div>
+        ))}
+
+        {/* Button to Add More Images */}
+        <button
+          type="button"
+          onClick={() =>
+            formik.setFieldValue("images", [
+              ...formik.values.images,
+              { title: "", description: "" },
+            ])
+          }
+          className="bg-green-500 text-white px-4 py-2 rounded w-full hover:bg-green-600"
+        >
+          ➕ Add More Images
+        </button>
+
+        {/* Image Settings */}
+        <h3 className="font-bold mt-4">📏 Image Settings</h3>
+
         <div>
           <label className="block mb-1">Max Size (MB)</label>
           <input
             type="number"
-            className="border rounded w-full p-2 text-black"
-            {...formik.getFieldProps("maxSize")}
+            className="border rounded w-full p-2"
+            {...formik.getFieldProps("settings.maxSize")}
           />
-          {formik.touched.maxSize && formik.errors.maxSize && (
-            <p className="text-red-500 text-sm">{formik.errors.maxSize}</p>
-          )}
+          {formik.touched.settings?.maxSize &&
+            formik.errors.settings?.maxSize && (
+              <p className="text-red-500 text-sm">
+                {formik.errors.settings.maxSize}
+              </p>
+            )}
         </div>
 
-        {/* Min Size */}
         <div>
-          <label className="block mb-1">Min Size (MB)</label>
+          <label className="block mb-1">Width (px)</label>
           <input
             type="number"
-            className="border rounded w-full p-2 text-black"
-            {...formik.getFieldProps("minSize")}
+            className="border rounded w-full p-2"
+            {...formik.getFieldProps("settings.width")}
           />
-          {formik.touched.minSize && formik.errors.minSize && (
-            <p className="text-red-500 text-sm">{formik.errors.minSize}</p>
-          )}
         </div>
 
-        {/* Max Width */}
+        <div>
+          <label className="block mb-1">Height (px)</label>
+          <input
+            type="number"
+            className="border rounded w-full p-2"
+            {...formik.getFieldProps("settings.height")}
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Min Width (px)</label>
+          <input
+            type="number"
+            className="border rounded w-full p-2"
+            {...formik.getFieldProps("settings.minWidth")}
+          />
+        </div>
+
+        <div>
+          <label className="block mb-1">Min Height (px)</label>
+          <input
+            type="number"
+            className="border rounded w-full p-2"
+            {...formik.getFieldProps("settings.minHeight")}
+          />
+        </div>
+
         <div>
           <label className="block mb-1">Max Width (px)</label>
           <input
             type="number"
-            className="border rounded w-full p-2 text-black"
-            {...formik.getFieldProps("maxWidth")}
+            className="border rounded w-full p-2"
+            {...formik.getFieldProps("settings.maxWidth")}
           />
-          {formik.touched.maxWidth && formik.errors.maxWidth && (
-            <p className="text-red-500 text-sm">{formik.errors.maxWidth}</p>
-          )}
         </div>
 
-        {/* Max Height */}
         <div>
           <label className="block mb-1">Max Height (px)</label>
           <input
             type="number"
-            className="border rounded w-full p-2 text-black"
-            {...formik.getFieldProps("maxHeight")}
+            className="border rounded w-full p-2"
+            {...formik.getFieldProps("settings.maxHeight")}
           />
-          {formik.touched.maxHeight && formik.errors.maxHeight && (
-            <p className="text-red-500 text-sm">{formik.errors.maxHeight}</p>
-          )}
+        </div>
+
+        <div>
+          <label className="block mb-1">Allowed MIME Type</label>
+          <input
+            type="text"
+            className="border rounded w-full p-2"
+            placeholder="e.g., image/png, image/jpeg"
+            {...formik.getFieldProps("settings.mimeType")}
+          />
+        </div>
+
+        <div>
+          <label className="block mb-1">Enable Watermark</label>
+          <input
+            type="checkbox"
+            className="mr-2"
+            {...formik.getFieldProps("settings.watermark")}
+            checked={formik.values.settings.watermark}
+          />
+          <span>Yes</span>
+        </div>
+
+        <div>
+          <label className="block mb-1">Enable Coordinate</label>
+          <input
+            type="checkbox"
+            className="mr-2"
+            {...formik.getFieldProps("settings.coordinate")}
+            checked={formik.values.settings.coordinate}
+          />
+          <span>Yes</span>
         </div>
 
         {/* Submit Button */}
