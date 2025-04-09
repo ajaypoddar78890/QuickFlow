@@ -53,7 +53,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
 
       {/* Absolutely Positioned Modal */}
       {showModal && (
-        <div className="absolute z-50 bg-white text-black rounded-lg shadow-xl p-6 w-[500px] min-h-[400px]">
+        <div className="absolute z-50 bg-white text-black rounded-lg shadow-xl p-6 w-[800px] min-h-[400px]">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Select Type</h3>
             <button
@@ -79,16 +79,7 @@ const CustomNode = ({ id, data = {}, selected }) => {
             <CustomNodeForm type={selectedType} onClose={closeModal} />
           )}
 
-          {!selectedType && (
-            <div className="flex justify-end mt-4">
-              {/* <button
-                onClick={closeModal}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-              >
-                Close
-              </button> */}
-            </div>
-          )}
+          {!selectedType && <div className="flex justify-end mt-4"></div>}
         </div>
       )}
 
