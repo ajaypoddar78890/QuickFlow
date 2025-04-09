@@ -71,8 +71,8 @@ const ReactFlowComponent = () => {
           sourceHandle: params.sourceHandle,
           target: params.target,
           targetHandle: params.targetHandle,
-          animated: true,
-          style: { stroke: "#007bff", strokeWidth: 2 },
+          animated: false,
+          style: { stroke: "8a8a87", strokeWidth: 2 },
           type: "custom",
         };
 

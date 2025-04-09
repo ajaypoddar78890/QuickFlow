@@ -1,5 +1,6 @@
 import React from "react";
-import { getBezierPath, EdgeLabelRenderer } from "@xyflow/react";
+import { getSmoothStepPath, EdgeLabelRenderer } from "@xyflow/react";
+import { MdDelete } from "react-icons/md";
 
 const CustomEdge = ({
   id,
@@ -10,9 +11,9 @@ const CustomEdge = ({
   sourcePosition,
   targetPosition,
   style,
-  setEdges, // received via props
+  setEdges,
 }) => {
-  const [edgePath, labelX, labelY] = getBezierPath({
+  const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -22,11 +23,7 @@ const CustomEdge = ({
   });
 
   const removeEdge = () => {
-    setEdges((eds) => {
-      const updatedEdges = eds.filter((edge) => edge.id !== id);
-
-      return updatedEdges;
-    });
+    setEdges((eds) => eds.filter((edge) => edge.id !== id));
   };
 
   return (
@@ -44,18 +41,14 @@ const CustomEdge = ({
             transform: `translate(-50%, -50%)`,
             left: labelX,
             top: labelY,
-            color: "white",
-            border: "none",
-            borderRadius: "50%",
-            padding: "4px 6px",
             cursor: "pointer",
-            fontSize: "12px",
-
-            pointerEvents: "auto", // Ensuring clickability
+            fontSize: "16px",
+            color: "red",  
+            pointerEvents: "auto",
           }}
           onClick={removeEdge}
         >
-          ❌
+          <MdDelete />
         </div>
       </EdgeLabelRenderer>
     </>
