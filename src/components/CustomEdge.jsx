@@ -1,5 +1,5 @@
 import React from "react";
-import { getSmoothStepPath, EdgeLabelRenderer } from "@xyflow/react";
+import { getSmoothStepPath, EdgeLabelRenderer, BaseEdge } from "@xyflow/react";
 import { MdDelete } from "react-icons/md";
 
 const CustomEdge = ({
@@ -28,12 +28,35 @@ const CustomEdge = ({
 
   return (
     <>
+      {/* Marker definition */}
+      <defs>
+        <marker
+          id="arrowhead"
+          markerWidth="10"
+          markerHeight="15"
+          refX="10"
+          refY="5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <path
+            d="M0,0 L10,5 L0,10 Z"
+            fill="#0659ff
+"
+          />
+        </marker>
+      </defs>
+
+      {/* Edge path with arrow */}
       <path
         id={id}
         className="react-flow__edge-path"
         d={edgePath}
         style={style}
+        markerEnd="url(#arrowhead)"
       />
+
+      {/* Delete button */}
       <EdgeLabelRenderer>
         <div
           style={{
@@ -43,7 +66,7 @@ const CustomEdge = ({
             top: labelY,
             cursor: "pointer",
             fontSize: "16px",
-            color: "red",  
+            color: "red",
             pointerEvents: "auto",
           }}
           onClick={removeEdge}

@@ -9,6 +9,7 @@ import {
   useEdgesState,
   addEdge,
   useReactFlow,
+  MarkerType,
 } from "@xyflow/react";
 import CustomNode from "./customnode";
 import CustomEdge from "./CustomEdge";
@@ -74,6 +75,9 @@ const ReactFlowComponent = () => {
           animated: false,
           style: { stroke: "8a8a87", strokeWidth: 2 },
           type: "custom",
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+          },
         };
 
         setEdges((eds) => addEdge(newEdge, eds));
@@ -150,6 +154,9 @@ const ReactFlowComponent = () => {
         animated: true,
         style: { stroke: "#007bff", strokeWidth: 2 },
         type: "custom",
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+        },
       };
 
       setEdges((eds) => addEdge(newEdge, eds));
@@ -170,10 +177,20 @@ const ReactFlowComponent = () => {
     const newNodeId = uuidv4();
     console.log("New Node UUID:", newNodeId);
 
+    const lastNode = nodes[nodes.length - 1];
+
+    // Default start position if no nodes exist
+    const defaultPosition = { x: 100, y: 100 };
+
+    // Position it to the right of the last node (or default)
+    const newPosition = lastNode
+      ? { x: lastNode.position.x + 200, y: lastNode.position.y + 100 }
+      : defaultPosition;
+
     const newNode = {
       id: newNodeId,
       type: "customNode",
-      position: { x: Math.random() * 600, y: Math.random() * 400 },
+      position: newPosition,
       data: {
         label: "Node",
         details: `Details for ${newNodeId}`,
@@ -181,11 +198,12 @@ const ReactFlowComponent = () => {
       },
     };
 
-    setNodes((nds) => [...nds, newNode]);
+    const updatedNodes = [...nodes, newNode];
+    setNodes(updatedNodes);
 
     localStorage.setItem(
       "reactFlowData",
-      JSON.stringify({ nodes: [...nodes, newNode], edges })
+      JSON.stringify({ nodes: updatedNodes, edges })
     );
   };
 

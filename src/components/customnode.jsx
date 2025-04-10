@@ -4,7 +4,7 @@ import { FaPlus, FaTimes, FaDotCircle } from "react-icons/fa";
 
 import CustomNodeForm from "./CustomNodeForm";
 
-const CustomNode = ({ id, data = {}, selected }) => {
+const CustomNode = ({ id, data = {} }) => {
   const nodeRef = useRef(null);
   const titleRef = useRef(null);
 
@@ -46,11 +46,11 @@ const CustomNode = ({ id, data = {}, selected }) => {
   return (
     <div
       ref={nodeRef}
-      className={`w-full shadow-lg rounded border-gray-400 bg-white relative font-sans`}
+      className={`w-full shadow-lg rounded-lg border-gray-400 bg-white relative font-sans`}
     >
       {/* Header with consistent background color */}
       <div
-        className={`relative ${colorClass} pt-2 flex items-center justify-center font-semibold text-sm text-gray-800`}
+        className={`relative ${colorClass} pt-2 flex items-center justify-center font-semibold text-sm text-gray-800 rounded-t-lg`}
       >
         <textarea
           ref={titleRef}
@@ -99,22 +99,20 @@ const CustomNode = ({ id, data = {}, selected }) => {
           )}
         </div>
       )}
-
-      {/* Right Handle (custom icon + connectable) */}
-      <div className="absolute top-1/2 right-[-12px] transform -translate-y-1/2 w-6 h-6">
-        {/* Invisible Handle */}
+      <div className="absolute top-1/2 right-[-12px] transform -translate-y-1/2 w-6 h-6 z-10 pointer-events-none">
+        {/* Functional Handle (click-through enabled) */}
         <Handle
           id="right"
           type="source"
           position={Position.Right}
-          isConnectable
-          className="absolute inset-0 w-full h-full bg-transparent z-0"
+          isConnectable={true}
+          className="absolute inset-0 w-full h-full bg-transparent"
         />
 
-        {/* Icon on top */}
+        {/* Clickable Icon (re-enabling pointer events) */}
         <div
-          className="absolute inset-0 flex items-center justify-center text-blue-600 cursor-pointer text-lg z-10"
-          onClick={() => console.log("Right handle icon clicked!")}
+          className="absolute inset-0 flex items-center justify-center text-blue-600 cursor-pointer text-lg pointer-events-auto"
+          onClick={handlePlusClick}
         >
           <FaDotCircle />
         </div>
