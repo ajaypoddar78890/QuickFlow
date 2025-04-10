@@ -39,11 +39,7 @@ const CustomEdge = ({
           orient="auto"
           markerUnits="strokeWidth"
         >
-          <path
-            d="M0,0 L10,5 L0,10 Z"
-            fill="#0659ff
-"
-          />
+          <path d="M0,0 L10,5 L0,10 Z" fill="#0859FF" />
         </marker>
       </defs>
 
@@ -52,7 +48,12 @@ const CustomEdge = ({
         id={id}
         className="react-flow__edge-path"
         d={edgePath}
-        style={style}
+        style={{
+          stroke: "#0859FF",
+          strokeWidth: 2,
+          fill: "none", // make sure it's 'none' or it might fill the curve
+          ...style,  
+        }}
         markerEnd="url(#arrowhead)"
       />
 
@@ -62,6 +63,7 @@ const CustomEdge = ({
           style={{
             position: "absolute",
             transform: `translate(-50%, -50%)`,
+            marginRight: "-12px",
             left: labelX,
             top: labelY,
             cursor: "pointer",
