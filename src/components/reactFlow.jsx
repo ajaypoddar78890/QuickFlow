@@ -16,17 +16,16 @@ import CustomEdge from "./CustomEdge";
 import "@xyflow/react/dist/style.css";
 import { FaSearchPlus, FaSearchMinus } from "react-icons/fa";
 
-const nodeTypes = {
-  customNode: CustomNode,
-};
-
+// ✅ nodeTypes updated to pass addNewNode to CustomNode
 const getSavedData = () => {
   const savedData = localStorage.getItem("reactFlowData");
   return savedData ? JSON.parse(savedData) : null;
 };
+ 
 
 const ReactFlowComponent = () => {
   const savedData = getSavedData();
+
   const [nodes, setNodes, onNodesChange] = useNodesState(
     savedData?.nodes?.length > 0
       ? savedData.nodes
@@ -44,7 +43,46 @@ const ReactFlowComponent = () => {
     savedData?.edges || []
   );
 
-  const { setViewport, getZoom } = useReactFlow(); // ✅ Added viewport control
+  const { setViewport, getZoom } = useReactFlow();
+
+  const addNewNode = useCallback(() => {
+    const newNodeId = uuidv4();
+
+    const lastNode = nodes[nodes.length - 1];
+    const defaultPosition = { x: 100, y: 100 };
+
+    const newPosition = lastNode
+      ? { x: lastNode.position.x + 200, y: lastNode.position.y + 100 }
+      : defaultPosition;
+
+    const newNode = {
+      id: newNodeId,
+      type: "customNode",
+      position: newPosition,
+      data: {
+        label: "Node",
+        details: `Details for ${newNodeId}`,
+        formData: { name: "", phone: "" },
+      },
+    };
+
+    const updatedNodes = [...nodes, newNode];
+    setNodes(updatedNodes);
+    localStorage.setItem(
+      "reactFlowData",
+      JSON.stringify({ nodes: updatedNodes, edges })
+    );
+  }, [nodes, edges, setNodes]);
+
+  // ✅ nodeTypes setup with prop passing
+  const nodeTypes = useMemo(
+    () => ({
+      customNode: (nodeProps) => (
+        <CustomNode {...nodeProps} addNewNode={addNewNode} />
+      ),
+    }),
+    [addNewNode]
+  );
 
   const edgeTypes = useMemo(
     () => ({
@@ -82,7 +120,6 @@ const ReactFlowComponent = () => {
 
         setEdges((eds) => addEdge(newEdge, eds));
 
-        // **Update Nodes to Store Connections in Data Object**
         setNodes((nodes) =>
           nodes.map((node) =>
             node.id === params.source
@@ -93,7 +130,7 @@ const ReactFlowComponent = () => {
                     connectedTo: [
                       ...(node.data.connectedTo || []),
                       params.target,
-                    ], // Track Target
+                    ],
                   },
                 }
               : node.id === params.target
@@ -104,21 +141,16 @@ const ReactFlowComponent = () => {
                     connectedTo: [
                       ...(node.data.connectedTo || []),
                       params.source,
-                    ], // Track Source
+                    ],
                   },
                 }
               : node
           )
         );
 
-        // **Debugging Logs**
-        console.log("Connected Nodes:", params.source, "→", params.target);
-        console.log("Updated Source Node:", sourceNode);
-        console.log("Updated Target Node:", targetNode);
         return;
       }
 
-      // **Create a New Node and Store Parent Connection**
       const newNodeId = uuidv4();
       let newPosition = {
         x: sourceNode.position.x,
@@ -140,7 +172,7 @@ const ReactFlowComponent = () => {
           label: "Node",
           details: `Details for ${newNodeId}`,
           formData: { name: "", phone: "" },
-          connectedTo: [params.source], // Store Parent Connection
+          connectedTo: [params.source],
         },
       };
 
@@ -160,72 +192,24 @@ const ReactFlowComponent = () => {
       };
 
       setEdges((eds) => addEdge(newEdge, eds));
-
-      // **Debugging Logs**
-      console.log(
-        "Created New Node:",
-        newNodeId,
-        "Connected to Parent:",
-        params.source
-      );
-      console.log("New Node Details:", newNode);
     },
     [nodes, setNodes, setEdges]
   );
 
-  const addNewNode = () => {
-    const newNodeId = uuidv4();
-    console.log("New Node UUID:", newNodeId);
-
-    const lastNode = nodes[nodes.length - 1];
-
-    // Default start position if no nodes exist
-    const defaultPosition = { x: 100, y: 100 };
-
-    // Position it to the right of the last node (or default)
-    const newPosition = lastNode
-      ? { x: lastNode.position.x + 200, y: lastNode.position.y + 100 }
-      : defaultPosition;
-
-    const newNode = {
-      id: newNodeId,
-      type: "customNode",
-      position: newPosition,
-      data: {
-        label: "Node",
-        details: `Details for ${newNodeId}`,
-        formData: { name: "", phone: "" },
-      },
-    };
-
-    const updatedNodes = [...nodes, newNode];
-    setNodes(updatedNodes);
-
-    localStorage.setItem(
-      "reactFlowData",
-      JSON.stringify({ nodes: updatedNodes, edges })
-    );
-  };
-
-  // ✅ Smooth Zooming Function
   const handleZoom = (zoomType) => {
     const currentZoom = getZoom();
     let newZoom = zoomType === "in" ? currentZoom * 1.2 : currentZoom / 1.2;
-
-    // Restrict Zoom Limits (Min: 0.5, Max: 2.5)
     newZoom = Math.max(0.5, Math.min(2.5, newZoom));
-
-    setViewport({ x: 0, y: 0, zoom: newZoom }, { duration: 300 }); // Smooth transition
+    setViewport({ x: 0, y: 0, zoom: newZoom }, { duration: 300 });
   };
 
   return (
     <div className="w-full h-full flex items-center justify-center overflow-hidden pl-20 z-10">
       <div className="w-[80vw] h-[90vh] border border-gray-300 rounded-lg shadow-lg relative flex flex-col">
-        {/* ✅ Header with Add Node & Smooth Zoom Buttons */}
         <div className="w-full h-16 bg-gray-400 flex items-center justify-between px-4 rounded-t-lg">
           <button
             onClick={addNewNode}
-            className="bg-black text-white px-4 py-2 rounded-md shadow-lg "
+            className="bg-black text-white px-4 py-2 rounded-md shadow-lg"
           >
             Add Node
           </button>
@@ -259,7 +243,6 @@ const ReactFlowComponent = () => {
             snapGrid={[20, 20]}
             connectionLineType="smoothstep"
             className="w-full h-full bg-green-400"
-            nodedata={nodes}
           >
             <MiniMap />
             <Controls />

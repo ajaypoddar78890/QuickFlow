@@ -1,16 +1,18 @@
 import React, { useState, useRef, useMemo } from "react";
-import { Handle, Position } from "@xyflow/react";
+import { Handle, Position, useReactFlow } from "@xyflow/react";
 import { FaPlus, FaTimes, FaDotCircle } from "react-icons/fa";
-
 import CustomNodeForm from "./CustomNodeForm";
 
-const CustomNode = ({ id, data = {} }) => {
+const CustomNode = ({ id, data = {}, addNewNode }) => {
   const nodeRef = useRef(null);
   const titleRef = useRef(null);
 
   const [title, setTitle] = useState(data.title || "Node Title");
   const [showModal, setShowModal] = useState(false);
   const [selectedType, setSelectedType] = useState(null);
+  const [showQuickMenu, setShowQuickMenu] = useState(false);
+
+  const { addNodes, addEdges, getNode } = useReactFlow();
 
   const handlePlusClick = () => {
     setShowModal(true);
@@ -21,7 +23,50 @@ const CustomNode = ({ id, data = {} }) => {
     setSelectedType(null);
   };
 
-  // Color classes
+  const handleQuickSelect = (type) => {
+    setSelectedType(type);
+    setShowQuickMenu(false);
+    setShowModal(false);
+
+    const newNodeId = `${Date.now()}`;
+
+    // Get position of parent node
+    const parentNode = getNode(id);
+    const newPosition = parentNode
+      ? {
+          x: parentNode.position.x + 250,
+          y: parentNode.position.y,
+        }
+      : { x: 0, y: 0 };
+
+    const label = `${type.charAt(0).toUpperCase() + type.slice(1)} Node`;
+
+    // Add the new node
+    addNodes({
+      id: newNodeId,
+      type: "customNode",
+      position: newPosition,
+      data: {
+        label,
+        title: label,
+        type,
+        addNewNode,
+      },
+    });
+
+    console.log("✅ New node added:", newNodeId);
+
+    // Add edge from current node to new node
+    addEdges({
+      id: `e-${id}-${newNodeId}`,
+      source: id,
+      target: newNodeId,
+      type: "custom",
+    });
+
+    console.log(`🔗 Edge created from ${id} → ${newNodeId}`);
+  };
+
   const colorClasses = [
     "bg-pink-300",
     "bg-purple-300",
@@ -30,7 +75,6 @@ const CustomNode = ({ id, data = {} }) => {
     "bg-blue-300",
   ];
 
-  // Generate a consistent index based on node id
   const getColorIndex = (str) => {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -48,7 +92,7 @@ const CustomNode = ({ id, data = {} }) => {
       ref={nodeRef}
       className={`w-full shadow-lg rounded-lg border-gray-400 bg-white relative font-sans`}
     >
-      {/* Header with consistent background color */}
+      {/* Header */}
       <div
         className={`relative ${colorClass} pt-2 flex items-center justify-center font-semibold text-sm text-gray-800 rounded-t-lg`}
       >
@@ -87,6 +131,7 @@ const CustomNode = ({ id, data = {} }) => {
           <select
             onChange={(e) => setSelectedType(e.target.value)}
             className="w-full p-2 mb-4 bg-gray-800 border border-gray-700 text-white cursor-pointer"
+            value={selectedType || ""}
           >
             <option value="">Select Type</option>
             <option value="image">Image</option>
@@ -99,8 +144,9 @@ const CustomNode = ({ id, data = {} }) => {
           )}
         </div>
       )}
+
+      {/* Right Handle + Quick Menu */}
       <div className="absolute top-1/2 right-[-12px] transform -translate-y-1/2 w-6 h-6 z-10 pointer-events-none">
-        {/* Functional Handle (click-through enabled) */}
         <Handle
           id="right"
           type="source"
@@ -109,16 +155,43 @@ const CustomNode = ({ id, data = {} }) => {
           className="absolute inset-0 w-full h-full bg-transparent"
         />
 
-        {/* Clickable Icon (re-enabling pointer events) */}
         <div
           className="absolute inset-0 flex items-center justify-center text-blue-600 cursor-pointer text-lg pointer-events-auto"
-          onClick={handlePlusClick}
+          onMouseEnter={() => setShowQuickMenu(true)}
+          onMouseLeave={() => setShowQuickMenu(false)}
         >
           <FaDotCircle />
+
+          {showQuickMenu && (
+            <div
+              className="absolute -top-20 right-6 bg-white border shadow-md rounded-md p-2 space-y-1 z-50 text-xs text-black w-28"
+              onMouseEnter={() => setShowQuickMenu(true)}
+              onMouseLeave={() => setShowQuickMenu(false)}
+            >
+              <div
+                className="hover:bg-gray-100 px-2 py-1 cursor-pointer rounded"
+                onClick={() => handleQuickSelect("image")}
+              >
+                📷 Image
+              </div>
+              <div
+                className="hover:bg-gray-100 px-2 py-1 cursor-pointer rounded"
+                onClick={() => handleQuickSelect("video")}
+              >
+                🎥 Video
+              </div>
+              <div
+                className="hover:bg-gray-100 px-2 py-1 cursor-pointer rounded"
+                onClick={() => handleQuickSelect("videoCall")}
+              >
+                📞 Video Call
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Bottom Handle */}
+      {/* Bottom & Left Handles */}
       <Handle
         id="bottom"
         type="source"
@@ -126,8 +199,6 @@ const CustomNode = ({ id, data = {} }) => {
         isConnectable
         className="w-4 h-2 bg-teal-500 rounded-none"
       />
-
-      {/* Left Handle */}
       <Handle
         id="left"
         type="target"
